@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -20,6 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
+
 SECRET_KEY = "django-insecure-4+@y22e$vmu-k1-w4w$4lj^d_04hecigwi5-u)ftel7iv)rild"
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -27,8 +33,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
+
+MY_APPS = ["hotel", "rooms"]
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "drf_spectacular",
+]
 
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -39,17 +51,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "drf_spectacular",
-]
-
-MY_APPS = [
-   'hotel',
-   'rooms'
-]
-
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
+INSTALLED_APPS = MY_APPS + THIRD_PARTY_APPS + DJANGO_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -85,10 +87,21 @@ WSGI_APPLICATION = "data_hotel.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("HOST"),
+        "PORT": os.getenv("PORT"),
     }
 }
 
@@ -110,6 +123,11 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# SIMPLE_JWT = {
+#     "ACCESS_TOKEN_LIFETIME": timedelta(hours=15),
+#     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+# }
 
 
 # Internationalization
