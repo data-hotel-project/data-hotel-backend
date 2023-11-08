@@ -11,6 +11,15 @@ class GuestSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=Guest.objects.all())],
     )
 
+    # username = serializers.CharField(
+    #     validators=[
+    #         UniqueValidator(
+    #             queryset=Guest.objects.all(),
+    #             message="A guest with that username already exists.",
+    #         )
+    #     ],
+    # )
+
     class Meta:
         model = Guest
         fields = "__all__"
