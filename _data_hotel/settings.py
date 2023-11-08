@@ -36,7 +36,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-MY_APPS = ["hotel", "address", "employee", "room"]
+MY_APPS = ["hotel", "address", "employee", "room", "guest", "reservation"]
 
 THIRD_PARTY_APPS = [
     "rest_framework",
@@ -88,26 +88,19 @@ WSGI_APPLICATION = "_data_hotel.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
 DATABASES = {
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": os.getenv("DB_NAME"),
+    #     "USER": os.getenv("DB_USER"),
+    #     "PASSWORD": os.getenv("DB_PASSWORD"),
+    #     "HOST": os.getenv("HOST"),
+    #     "PORT": os.getenv("PORT"),
+    # },
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("HOST"),
-        "PORT": os.getenv("PORT"),
-    },
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
 
 
@@ -133,7 +126,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
