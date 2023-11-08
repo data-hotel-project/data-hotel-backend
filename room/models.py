@@ -1,5 +1,6 @@
 from django.db import models
 from hotel.models import Hotel
+from guest.models import Guest
 
 
 class RoomStatusChoice(models.TextChoices):
@@ -22,4 +23,6 @@ class Room(models.Model):
     total_value = models.DecimalField(max_digits=15, decimal_places=2)
 
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
-
+    guest = models.ForeignKey(
+        Guest, on_delete=models.DO_NOTHING, related_name="rooms", null=True, blank=True
+    )
