@@ -17,7 +17,7 @@ class Employee(AbstractUser):
     admission_date = models.DateTimeField()
     is_working = models.BooleanField(default=True)
 
-    address = models.OneToOneField("address.Address", on_delete=models.DO_NOTHING)
+    address = models.ForeignKey("address.Address", on_delete=models.DO_NOTHING)
 
     hotel = models.OneToOneField("hotel.Hotel", on_delete=models.CASCADE)
 
