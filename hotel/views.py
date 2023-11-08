@@ -14,11 +14,11 @@ class HotelListCreateView(generics.ListCreateAPIView):
         serializer = HotelSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        address = serializer.validated_data.pop("address")
+        address_data = serializer.validated_data.pop("address")
         print(address)
-        Address.objects.create(**address)
+        address = Address.objects.create(**address_data)
 
-        serializer.save()
+        hotel = Hotel.objects.create(address=address, **serializer.validated_data)
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
