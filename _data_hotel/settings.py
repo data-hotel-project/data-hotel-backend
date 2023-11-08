@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 load_dotenv()
@@ -35,7 +36,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-MY_APPS = ["hotel", "rooms"]
+MY_APPS = ["hotel", "address", "employee", "room"]
 
 THIRD_PARTY_APPS = [
     "rest_framework",
@@ -102,7 +103,11 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("HOST"),
         "PORT": os.getenv("PORT"),
-    }
+    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 
@@ -124,10 +129,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(hours=15),
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-# }
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=2),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
+}
 
 
 # Internationalization
@@ -151,3 +156,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "employee.Employee"
