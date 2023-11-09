@@ -1,15 +1,15 @@
 from rest_framework import generics
 
-from .models import Employee
-from .serializer import EmployeeSerializer
+from .models import Guest
+from .serializer import GuestSerializer
 
 
 class GuestView(generics.ListCreateAPIView):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
 
 
 class GuestDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
     lookup_url_kwarg = "pk"

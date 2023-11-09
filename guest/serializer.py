@@ -18,7 +18,7 @@ class GuestSerializer(serializers.ModelSerializer):
 
         validated_data["address"] = address_data
 
-        return Guest.objects.create_user(**validated_data)
+        return Guest.objects.create(**validated_data)
 
     def update(self, instance: Guest, validated_data: dict) -> Guest:
         for key, value in validated_data.items():
