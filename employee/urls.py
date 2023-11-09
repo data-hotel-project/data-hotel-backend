@@ -1,5 +1,5 @@
+from . import views
 from django.urls import path
-from employee import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
