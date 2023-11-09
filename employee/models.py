@@ -2,6 +2,8 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from hotel.models import Hotel
+
 
 class FunctionChoice(models.TextChoices):
     ADMIN = "Admin"
@@ -27,6 +29,4 @@ class Employee(AbstractUser):
 
     address = models.ForeignKey("address.Address", on_delete=models.DO_NOTHING)
 
-    hotel = models.ForeignKey(
-        "hotel.Hotel", on_delete=models.CASCADE, related_name="employees"
-    )
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="employees")
