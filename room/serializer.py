@@ -9,13 +9,6 @@ from .models import Room
 
 class RoomSerializer(serializers.ModelSerializer):
     hotel = serializers.PrimaryKeyRelatedField(queryset=Hotel.objects.all())
-    # guest = GuestSerializer()
-
-    # def create(self, validated_data: dict) -> Room:
-    #     print("+" * 29)
-    #     print(validated_data)
-    #     print("+" * 29)
-    #     return Room.objects.create(**validated_data)
 
     class Meta:
         model = Room
