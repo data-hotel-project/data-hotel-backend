@@ -12,12 +12,12 @@ class FunctionChoice(models.TextChoices):
 class Employee(AbstractUser):
     class Meta:
         ordering = ["id"]
-        
+
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     birthdate = models.DateField()
     nationality = models.CharField(max_length=20)
     contact = models.CharField(max_length=11)
-    contact_aditional = models.CharField(max_length=11, null=True, blank=True)
+    contact_aditional = models.CharField(max_length=11, blank=True, default="")
     emergency_num = models.CharField(max_length=11)
     job_function = models.CharField(
         max_length=20, choices=FunctionChoice.choices, default=FunctionChoice.REGULAR
@@ -27,4 +27,6 @@ class Employee(AbstractUser):
 
     address = models.ForeignKey("address.Address", on_delete=models.DO_NOTHING)
 
-    hotel = models.ForeignKey("hotel.Hotel", on_delete=models.CASCADE)
+    hotel = models.ForeignKey(
+        "hotel.Hotel", on_delete=models.CASCADE, related_name="employees"
+    )

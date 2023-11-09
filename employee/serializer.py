@@ -1,26 +1,24 @@
 from rest_framework import serializers
-from .models import Employee
+
 from address.serializer import AddressSerializer
-from address.models import Address
+
+from .models import Employee
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-
     address = AddressSerializer()
-
 
     def create(self, validated_data: dict) -> Employee:
         address_data = validated_data.pop("address")
-        
+
         address_serializer = AddressSerializer(data=address_data)
         address_serializer.is_valid(raise_exception=True)
 
         address_data = address_serializer.save()
 
         validated_data["address"] = address_data
-        
-        return Employee.objects.create_user(**validated_data)
 
+        return Employee.objects.create_user(**validated_data)
 
     def update(self, instance: Employee, validated_data: dict) -> Employee:
         for key, value in validated_data.items():
@@ -33,9 +31,23 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
         return instance
 
-
     class Meta:
         model = Employee
         # fields = "__all__"
-        fields = ["id", "username", "email", "password", "birthdate", "nationality", "contact", "contact_aditional", "emergency_num", "job_function", "admission_date", "is_working", "address", "hotel"]
+        fields = [
+            "id",
+            "username",
+            "email",
+            "password",
+            "birthdate",
+            "nationality",
+            "contact",
+            "contact_aditional",
+            "emergency_num",
+            "job_function",
+            "admission_date",
+            "is_working",
+            "address",
+            "hotel",
+        ]
         extra_kwargs = {"password": {"write_only": True}}

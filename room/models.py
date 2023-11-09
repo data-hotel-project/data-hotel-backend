@@ -1,7 +1,9 @@
 import uuid
+
 from django.db import models
-from hotel.models import Hotel
+
 from guest.models import Guest
+from hotel.models import Hotel
 
 
 class RoomStatusChoice(models.TextChoices):
@@ -14,7 +16,7 @@ class RoomStatusChoice(models.TextChoices):
 class Room(models.Model):
     class Meta:
         ordering = ["id"]
-        
+
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     number = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
@@ -23,9 +25,11 @@ class Room(models.Model):
         choices=RoomStatusChoice.choices,
         default=RoomStatusChoice.FREE,
     )
-    entry_date = models.DateTimeField()
-    departure_date = models.DateTimeField()
-    total_value = models.DecimalField(max_digits=15, decimal_places=2)
+    entry_date = models.DateTimeField(null=True)
+    departure_date = models.DateTimeField(null=True)
+    total_value = models.DecimalField(
+        max_digits=15, decimal_places=2, blank=True, default=0
+    )
 
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     guest = models.ForeignKey(

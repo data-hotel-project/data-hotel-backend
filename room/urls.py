@@ -1,4 +1,7 @@
+from . import views
 from django.urls import path
-from room import views
 
-
+urlpatterns = [
+    path("", views.RoomView.as_view()),
+    path("<uuid:pk>/", views.RoomDetailView.as_view()),
+]
