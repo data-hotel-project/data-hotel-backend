@@ -38,4 +38,4 @@ class GuestSerializer(serializers.ModelSerializer):
             "password": {"write_only": True, "required": True},
             "email": {"required": True},
         }
-        depth = 1
+        
