@@ -27,4 +27,6 @@ class Employee(AbstractUser):
 
     address = models.ForeignKey("address.Address", on_delete=models.DO_NOTHING)
 
-    hotel = models.ForeignKey("hotel.Hotel", on_delete=models.CASCADE)
+    hotel = models.ForeignKey(
+        "hotel.Hotel", on_delete=models.CASCADE, related_name="employees"
+    )
