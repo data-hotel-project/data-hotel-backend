@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from hotel.models import Hotel
 from guest.models import Guest
@@ -11,6 +12,10 @@ class RoomStatusChoice(models.TextChoices):
 
 
 class Room(models.Model):
+    class Meta:
+        ordering = ["id"]
+        
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     number = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
     status = models.CharField(

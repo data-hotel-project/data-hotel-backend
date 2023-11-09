@@ -10,3 +10,4 @@ class AddressListCreateView(generics.ListCreateAPIView):
 class AddressRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
+    lookup_url_kwarg = "pk"
