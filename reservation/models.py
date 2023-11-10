@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from guest.models import Guest
+from hotel.models import Hotel
 
 
 class Reservation(models.Model):
@@ -13,5 +14,9 @@ class Reservation(models.Model):
     departure_date = models.DateTimeField()
 
     guest = models.ForeignKey(
-        Guest, on_delete=models.CASCADE, related_name="reservations"
+        Guest, on_delete=models.CASCADE, related_name="guest_reservations"
+    )
+
+    hotel = models.ForeignKey(
+        Hotel, on_delete=models.CASCADE, related_name="hotel_reservations"
     )
