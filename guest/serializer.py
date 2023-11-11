@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from address.serializer import AddressSerializer
+from utils.fields.guest_fields import GuestFields
 
 from .models import Guest
 
@@ -18,7 +20,7 @@ class GuestSerializer(serializers.ModelSerializer):
 
         validated_data["address"] = address_data
 
-        return Guest.objects.create(**validated_data)
+        return Guest.objects.create_user(**validated_data)
 
     def update(self, instance: Guest, validated_data: dict) -> Guest:
         for key, value in validated_data.items():
@@ -33,9 +35,43 @@ class GuestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Guest
-        fields = "__all__"
-        extra_kwargs = {
-            "password": {"write_only": True, "required": True},
-            "email": {"required": True},
-        }
-        
+        fields = GuestFields.fields
+        extra_kwargs = GuestFields.extra_kwargs
+
+
+class GuestTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        from ipdb import set_trace
+
+        email = attrs.get("username")
+        password = attrs.get("password")
+
+        # data = super().validate(attrs)
+        # refresh = self.get_token(self.user)
+
+        # data["refresh"] = str(refresh)
+        # data["access"] = str(refresh.access_token)
+
+        # return data
+
+        if email and password:
+            user = self.get_user(email)
+            if user and user.check_password(password):
+                refresh = self.get_token(user)
+
+                data = {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                }
+
+                # set_trace()
+                return data
+
+        raise serializers.ValidationError("Invalid credentials")
+
+    def get_user(self, email):
+        try:
+            user = Guest.objects.get(email=email)
+            return user
+        except Guest.DoesNotExist:
+            return None
