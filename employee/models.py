@@ -1,7 +1,8 @@
-import uuid
+from django.contrib.auth.models import Group, Permission
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
+from address.models import Address
+from guest.models import CustomUser
 from hotel.models import Hotel
 
 
@@ -11,22 +12,20 @@ class FunctionChoice(models.TextChoices):
     REGULAR = "Regular"
 
 
-class Employee(AbstractUser):
-    class Meta:
-        ordering = ["id"]
-
-    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    birthdate = models.DateField()
-    nationality = models.CharField(max_length=20)
-    contact = models.CharField(max_length=11)
-    contact_aditional = models.CharField(max_length=11, blank=True, default="")
-    emergency_num = models.CharField(max_length=11)
+class Employee(CustomUser):
     job_function = models.CharField(
         max_length=20, choices=FunctionChoice.choices, default=FunctionChoice.REGULAR
     )
     admission_date = models.DateTimeField(auto_now_add=True)
     is_working = models.BooleanField(default=True)
 
-    address = models.ForeignKey("address.Address", on_delete=models.DO_NOTHING)
+    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING)
 
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="employees")
+    groups = models.ManyToManyField(Group, related_name="employee_groups")
+    user_permissions = models.ManyToManyField(
+        Permission, related_name="employee_user_permissions"
+    )
+
+    class Meta:
+        ordering = ["id"]
