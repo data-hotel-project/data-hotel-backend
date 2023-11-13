@@ -1,8 +1,7 @@
 from rest_framework import generics
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Employee
-from .serializer import EmployeeSerializer, EmployeeTokenSerializer
+from .serializer import EmployeeSerializer
 
 
 class EmployeeListCreateView(generics.ListCreateAPIView):
@@ -14,7 +13,3 @@ class EmployeeRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     lookup_url_kwarg = "pk"
-
-
-class EmployeeTokenView(TokenObtainPairView):
-    serializer_class = EmployeeTokenSerializer

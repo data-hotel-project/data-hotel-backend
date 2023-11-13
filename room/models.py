@@ -1,7 +1,5 @@
 import uuid
-
 from django.db import models
-
 from guest.models import Guest
 from hotel.models import Hotel
 
@@ -27,6 +25,9 @@ class Room(models.Model):
     )
     entry_date = models.DateTimeField(null=True)
     departure_date = models.DateTimeField(null=True)
+    daily_rate = models.DecimalField(
+        max_digits=15, decimal_places=2
+    )
     total_value = models.DecimalField(
         max_digits=15, decimal_places=2, blank=True, default=0
     )

@@ -8,7 +8,6 @@ class HotelListCreateView(generics.ListCreateAPIView):
     serializer_class = HotelSerializer
 
 
-
 class HotelRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.validators import UniqueValidator
 
 from address.serializer import AddressSerializer
 from utils.fields.employee_fields import EmployeeFields
@@ -9,6 +9,9 @@ from .models import Employee
 
 class EmployeeSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=Employee.objects.all())],
+    )
 
     def create(self, validated_data: dict) -> Employee:
         address_data = validated_data.pop("address")
@@ -37,21 +40,3 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = Employee
         fields = EmployeeFields.fields
         extra_kwargs = EmployeeFields.extra_kwargs
-
-
-class EmployeeTokenSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        refresh = self.get_token(self.user)
-
-        from ipdb import set_trace
-
-        print("*" * 20)
-        print(self.user)
-        print("*" * 20)
-        # set_trace()
-
-        data["refresh"] = str(refresh)
-        data["access"] = str(refresh.access_token)
-
-        return data
