@@ -8,7 +8,7 @@ from address.models import Address
 
 class CustomUser(AbstractUser):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    birthdate = models.DateTimeField(null=True)
+    birthdate = models.DateField(null=True)
     nationality = models.CharField(max_length=20)
     contact = models.CharField(max_length=50)
     contact_aditional = models.CharField(max_length=11, blank=True, default="")
