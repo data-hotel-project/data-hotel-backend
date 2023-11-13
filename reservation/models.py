@@ -18,5 +18,5 @@ class Reservation(models.Model):
     )
 
     hotel = models.ForeignKey(
-        Hotel, on_delete=models.CASCADE, related_name="hotel_reservations"
+        Hotel, on_delete=models.CASCADE, related_name="reservations"
     )
