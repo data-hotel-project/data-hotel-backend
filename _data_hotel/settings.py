@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
-from dotenv import load_dotenv
 import os
 from datetime import timedelta
+from pathlib import Path
+from django.db import connection, IntegrityError
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 load_dotenv()
@@ -150,3 +152,12 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "employee.Employee"
+
+
+# ...
+
+try:
+    with connection.cursor() as cursor:
+        cursor.execute("SET CONSTRAINTS ALL DEFERRED;")
+except IntegrityError:
+    pass
