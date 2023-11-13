@@ -27,9 +27,7 @@ hotel_data = {
 
 hotel = Hotel.objects.create(**hotel_data)
 
-birthdate = datetime.strptime("2001-01-15T01:22:37", "%Y-%m-%dT%H:%M:%S").replace(
-    tzinfo=pytz.UTC
-)
+birthdate = datetime.strptime("2001-01-15", "%Y-%m-%d").replace(tzinfo=pytz.UTC)
 
 employee_data_partial = {
     "birthdate": birthdate,
