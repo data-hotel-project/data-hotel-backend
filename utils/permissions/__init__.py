@@ -4,7 +4,7 @@ from rest_framework.views import Request, View
 
 class IsAdmin(BasePermission):
     def has_permission(self, request: Request, view: View):
-        return request.user.is_authenticated and request.user.is_superuser
+        return request.user.is_superuser
 
 
 class IsAdminOrReadOnly(BasePermission):
