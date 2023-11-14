@@ -5,6 +5,7 @@ from .permissions import IsGuest
 from utils.permissions import IsAdmin
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
 class ReservationListCreateView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsGuest]
