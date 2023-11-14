@@ -13,11 +13,19 @@ class ReservationListCreateView(generics.ListCreateAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
 
+    def get_queryset(self):
+        hotel_id_parameter = self.request.query_params.get("hotel_id")
+        if hotel_id_parameter:
+            return Reservation.objects.filter(hotel=hotel_id_parameter)
+        
+        return super().get_queryset()
+
     def post(self, request, *args, **kwargs):
         from ipdb import set_trace
         set_trace()
         return super().post(request, *args, **kwargs)
 
+    
 
     def perform_create(self, serializer):
         print("eu cheiguei aqui")
