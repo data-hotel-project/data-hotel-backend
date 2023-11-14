@@ -47,7 +47,7 @@ class GuestSerializer(serializers.ModelSerializer):
 
 class GuestTokenSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        email_or_username = attrs.get("username")
+        email_or_username = attrs.get("email")
         password = attrs.get("password")
 
         if email_or_username and password:

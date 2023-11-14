@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Group, Permission
 from django.db import models
 
 from address.models import Address
@@ -22,10 +21,6 @@ class Employee(CustomUser):
     address = models.ForeignKey(Address, on_delete=models.DO_NOTHING)
 
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="employees")
-    groups = models.ManyToManyField(Group, related_name="employee_groups")
-    user_permissions = models.ManyToManyField(
-        Permission, related_name="employee_user_permissions"
-    )
 
     class Meta:
         ordering = ["id"]
