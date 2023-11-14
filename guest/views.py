@@ -4,7 +4,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Guest
 from .serializer import GuestSerializer, GuestTokenSerializer
-from .permissions import IsGuestOwner
+from .permissions import IsGuestAndOwner
 from utils.permissions import IsAdmin
 
 
@@ -15,7 +15,7 @@ class GuestView(generics.ListCreateAPIView):
 
 class GuestDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsGuestOwner | IsAdmin]
+    permission_classes = [IsGuestAndOwner | IsAdmin]
 
     queryset = Guest.objects.all()
     serializer_class = GuestSerializer
