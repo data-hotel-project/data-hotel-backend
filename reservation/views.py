@@ -7,8 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class ReservationListCreateView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    # mudar para "ser GUEST"
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsGuest]
 
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
