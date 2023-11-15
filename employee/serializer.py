@@ -1,4 +1,3 @@
-import re
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -45,37 +44,4 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class EmployeeTokenSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        email_or_username = attrs.get("email")
-        password = attrs.get("password")
-
-        if email_or_username and password:
-            user = self.get_user(email_or_username)
-            if user and user.check_password(password):
-                refresh = self.get_token(user)
-
-                data = {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                }
-
-                return data
-
-        raise serializers.ValidationError("Invalid credentials")
-
-    def get_user(self, email_or_username):
-        r = re.compile(r".+@(?:.+\.)+[a-zA-Z]{2,}$")
-
-        if r.match(email_or_username):
-            try:
-                user = Employee.objects.get(email=email_or_username)
-                return user
-            except Employee.DoesNotExist:
-                return None
-
-        else:
-            try:
-                user = Employee.objects.get(username=email_or_username)
-                return user
-            except Employee.DoesNotExist:
-                return None
+    pass

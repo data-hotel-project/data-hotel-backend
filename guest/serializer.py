@@ -1,10 +1,9 @@
-import re
-
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from address.serializer import AddressSerializer
+from utils.auth.authentication import EmailOrUsernameModelBackend
 from utils.fields.guest_fields import GuestFields
 
 from .models import Guest
@@ -45,38 +44,8 @@ class GuestSerializer(serializers.ModelSerializer):
         extra_kwargs = GuestFields.extra_kwargs
 
 
-class GuestTokenSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        email_or_username = attrs.get("email")
-        password = attrs.get("password")
-
-        if email_or_username and password:
-            user = self.get_user(email_or_username)
-            if user and user.check_password(password):
-                refresh = self.get_token(user)
-
-                data = {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                }
-
-                return data
-
-        raise serializers.ValidationError("Invalid credentials")
-
-    def get_user(self, email_or_username):
-        r = re.compile(r".+@(?:.+\.)+[a-zA-Z]{2,}$")
-
-        if r.match(email_or_username):
-            try:
-                user = Guest.objects.get(email=email_or_username)
-                return user
-            except Guest.DoesNotExist:
-                return None
-
-        else:
-            try:
-                user = Guest.objects.get(username=email_or_username)
-                return user
-            except Guest.DoesNotExist:
-                return None
+class GuestTokenSerializer(TokenObtainPairSerializer, EmailOrUsernameModelBackend):
+    # from ipdb import set_trace
+    # set_trace()
+    # print("AAAAAAAAA")
+    pass
