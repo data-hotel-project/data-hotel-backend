@@ -1,47 +1,42 @@
-from django.contrib.auth import authenticate
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from utils.auth.authentication import EmailOrUsernameModelBackend
+from utils.permissions import IsAdmin, IsAdminOrReadOnly
 
 from .models import Employee
+from .permissions import IsEmployeeAndOwner
 from .serializer import EmployeeSerializer
 
 
-class EmployeeListCreateView(generics.ListCreateAPIView):
+class EmployeeListCreateView(ListCreateAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminOrReadOnly]
+
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
 
+    def get_queryset(self):
+        hotel_id_parameter = self.request.query_params.get("hotel_id")
+        if hotel_id_parameter:
+            return Employee.objects.filter(hotel=hotel_id_parameter)
 
-class EmployeeRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+        return super().get_queryset()
+
+
+class EmployeeRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsEmployeeAndOwner | IsAdmin]
+
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     lookup_url_kwarg = "pk"
 
 
-class EmployeeTokenView(TokenObtainPairView, TokenObtainPairSerializer):
+class EmployeeTokenView(TokenObtainPairView):
     serializer_class = EmailOrUsernameModelBackend
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get("email")
-        username = request.data.get("username")
-        password = request.data.get("password")
-
-        if not email and not username or not password:
-            return Response(
-                {"error": "Both email/username and password are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        user = authenticate(request, username=username, email=email, password=password)
-        if user.check_password(password):
-            refresh = self.get_token(user)
-
-            data = {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            }
-
-            return Response(data, status=status.HTTP_200_OK)
+        backend_instance = EmailOrUsernameModelBackend()
+        return backend_instance.handle_login_auth(request)

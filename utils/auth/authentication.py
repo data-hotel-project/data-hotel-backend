@@ -1,9 +1,12 @@
-from django.contrib.auth import get_user_model
+import re
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.backends import ModelBackend
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 from employee.models import Employee
 from guest.models import Guest
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class EmailOrUsernameModelBackend(ModelBackend):
@@ -18,13 +21,15 @@ class EmailOrUsernameModelBackend(ModelBackend):
             else get_user_model()
         )
 
-    def authenticate(self, request, username=None, email=None, password=None, **kwargs):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         userModel = self.get_user_model(request)
 
-        if email:
+        r = re.compile(r".+@(?:.+\.)+[a-zA-Z]{2,}$")
+
+        if r.match(username):
             try:
                 print("Entrou email")
-                user = userModel.objects.get(email=email)
+                user = userModel.objects.get(email=username)
             except userModel.DoesNotExist:
                 raise serializers.ValidationError(
                     {"non_field_errors": ["Invalid credentials"]}
@@ -38,8 +43,28 @@ class EmailOrUsernameModelBackend(ModelBackend):
                 raise serializers.ValidationError(
                     {"non_field_errors": ["Invalid credentials"]}
                 )
-
         if user.check_password(password):
             return user
 
         return None
+
+    def handle_login_auth(self, request):
+        email_or_username = request.data.get("username")
+        password = request.data.get("password")
+
+        if not email_or_username or not password:
+            return Response(
+                {"error": "username and password are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = authenticate(request, username=email_or_username, password=password)
+        if user:
+            refresh = RefreshToken.for_user(user)
+
+            data = {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+
+            return Response(data, status=status.HTTP_200_OK)
