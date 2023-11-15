@@ -42,12 +42,11 @@ class GuestTokenView(TokenObtainPairView, TokenObtainPairSerializer):
             )
 
         user = authenticate(request, username=username, email=email, password=password)
-        if user.check_password(password):
-            refresh = self.get_token(user)
+        refresh = self.get_token(user)
 
-            data = {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            }
+        data = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
 
-            return Response(data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)

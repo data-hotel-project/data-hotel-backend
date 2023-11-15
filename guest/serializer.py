@@ -47,5 +47,5 @@ class GuestSerializer(serializers.ModelSerializer):
 class GuestTokenSerializer(TokenObtainPairSerializer, EmailOrUsernameModelBackend):
     # from ipdb import set_trace
     # set_trace()
-    print("AAAAAAAAA")
+    # print("AAAAAAAAA")
     pass

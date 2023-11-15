@@ -7,24 +7,25 @@ from guest.models import Guest
 
 
 class EmailOrUsernameModelBackend(ModelBackend):
-    def authenticate(self, request, username=None, email=None, password=None, **kwargs):
-        url_route = request._request.path_info.split("/")[2]
-        user_model = (
+    def get_user_model(self, request):
+        url_route = request.path_info.split("/")[2]
+
+        return (
             Guest
             if "guest" in url_route
             else Employee
             if "employee" in url_route
-            else None
+            else get_user_model()
         )
 
-        if user_model is None:
-            user_model = get_user_model()
+    def authenticate(self, request, username=None, email=None, password=None, **kwargs):
+        userModel = self.get_user_model(request)
 
         if email:
             try:
                 print("Entrou email")
-                user = user_model.objects.get(email=email)
-            except user_model.DoesNotExist:
+                user = userModel.objects.get(email=email)
+            except userModel.DoesNotExist:
                 raise serializers.ValidationError(
                     {"non_field_errors": ["Invalid credentials"]}
                 )
@@ -32,8 +33,8 @@ class EmailOrUsernameModelBackend(ModelBackend):
         else:
             try:
                 print("Entrou Username")
-                user = user_model.objects.get(username=username)
-            except user_model.DoesNotExist:
+                user = userModel.objects.get(username=username)
+            except userModel.DoesNotExist:
                 raise serializers.ValidationError(
                     {"non_field_errors": ["Invalid credentials"]}
                 )
