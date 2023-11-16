@@ -41,7 +41,3 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = Employee
         fields = EmployeeFields.fields
         extra_kwargs = EmployeeFields.extra_kwargs
-
-
-class EmployeeTokenSerializer(TokenObtainPairSerializer):
-    pass

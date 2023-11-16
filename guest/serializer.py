@@ -3,7 +3,6 @@ from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from address.serializer import AddressSerializer
-from utils.auth.authentication import EmailOrUsernameModelBackend
 from utils.fields.guest_fields import GuestFields
 
 from .models import Guest
@@ -42,10 +41,3 @@ class GuestSerializer(serializers.ModelSerializer):
         model = Guest
         fields = GuestFields.fields
         extra_kwargs = GuestFields.extra_kwargs
-
-
-class GuestTokenSerializer(TokenObtainPairSerializer, EmailOrUsernameModelBackend):
-    # from ipdb import set_trace
-    # set_trace()
-    # print("AAAAAAAAA")
-    pass

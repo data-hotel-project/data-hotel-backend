@@ -22,16 +22,8 @@ class ReservationListCreateView(generics.ListCreateAPIView):
 
         return super().get_queryset()
 
-    def post(self, request, *args, **kwargs):
-        # from ipdb import set_trace
-
-        # set_trace()
-        return super().post(request, *args, **kwargs)
-
     def perform_create(self, serializer):
-        print("eu cheiguei aqui")
-
-        return serializer.save(guest=self.request.user)
+        return serializer.save(guest=self.request.user.guest)
 
 
 class ReservationRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
