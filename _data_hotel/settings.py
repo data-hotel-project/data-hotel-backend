@@ -15,6 +15,9 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 load_dotenv()
@@ -39,10 +42,7 @@ ALLOWED_HOSTS = []
 
 MY_APPS = ["hotel", "address", "employee", "room", "guest", "reservation"]
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "drf_spectacular",
-]
+THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular", "cloudinary"]
 
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -149,6 +149,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+cloudinary.config(
+    cloud_name="dl6chlmjd",
+    api_key="462388434956963",
+    api_secret="eB1wS9Tf9N10dQmG6FRVHB2omhc",
+)
 
 AUTHENTICATION_BACKENDS = ["utils.auth.authentication.EmailOrUsernameModelBackend"]
 
