@@ -12,7 +12,7 @@ from .serializer import EmployeeSerializer
 
 class EmployeeListCreateView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdminOrReadOnly]
+    # permission_classes = [IsAdminOrReadOnly]
 
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer

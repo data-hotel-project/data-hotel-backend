@@ -1,6 +1,6 @@
 import uuid
 
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from address.models import Address
@@ -15,18 +15,18 @@ class CustomUser(AbstractUser):
     emergency_num = models.CharField(max_length=11)
     email = models.EmailField(max_length=50, unique=True, blank=True)
 
-    class Meta:
-        abstract = True
+    # class Meta:
+    #     abstract = True
 
 
 class Guest(CustomUser):
     address = models.OneToOneField(
         Address, on_delete=models.DO_NOTHING, null=True, blank=True
     )
-    groups = models.ManyToManyField(Group, related_name="guest_groups")
-    user_permissions = models.ManyToManyField(
-        Permission, related_name="guest_user_permissions"
-    )
+    # groups = models.ManyToManyField(Group, related_name="guest_groups")
+    # user_permissions = models.ManyToManyField(
+    #     Permission, related_name="guest_user_permissions"
+    # )
 
     class Meta:
         ordering = ["id"]
