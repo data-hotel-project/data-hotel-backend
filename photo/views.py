@@ -17,6 +17,7 @@ class PhotoListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         hotel_id_parameter = self.request.query_params.get("hotel_id")
         room_id_parameter = self.request.query_params.get("room_id")
+
         if hotel_id_parameter:
             return Photo.objects.filter(hotel=hotel_id_parameter)
         if room_id_parameter:
