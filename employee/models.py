@@ -1,7 +1,7 @@
 from django.db import models
 
 from address.models import Address
-from guest.models import CustomUser
+from customUser.models import CustomUser
 from hotel.models import Hotel
 
 
