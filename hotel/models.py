@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Hotel(models.Model):
@@ -11,5 +12,6 @@ class Hotel(models.Model):
     email = models.EmailField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
     num_rooms = models.PositiveIntegerField()
+    image = CloudinaryField("image")
 
     address = models.OneToOneField("address.Address", on_delete=models.DO_NOTHING)

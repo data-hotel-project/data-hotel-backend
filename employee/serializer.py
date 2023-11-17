@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from address.serializer import AddressSerializer
 from utils.fields.employee_fields import EmployeeFields
