@@ -7,6 +7,10 @@ from address.serializer import AddressSerializer
 
 class HotelSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
+    full_url = serializers.SerializerMethodField()
+
+    def get_full_url(self, obj):
+        return obj.image.url
 
     def create(self, validated_data: dict) -> Hotel:
         address_data = validated_data.pop("address")
