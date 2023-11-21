@@ -33,6 +33,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/address/", include("address.urls")),
     path("api/photo/", include("photo.urls")),
+    path("api/logged/", include("customUser.urls")),
     path("api/hotel/", include("hotel.urls")),
     path("api/room/", include("room.urls")),
     path("api/guest/", include("guest.urls")),
