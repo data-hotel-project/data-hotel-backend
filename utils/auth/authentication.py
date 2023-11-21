@@ -65,6 +65,13 @@ class EmailOrUsernameModelBackend(ModelBackend):
             data = {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "is_working": user.is_working,
+                    "is_staff": user.is_staff,
+                    "is_superuser": user.is_superuser,
+                },
             }
 
             return Response(data, status=status.HTTP_200_OK)

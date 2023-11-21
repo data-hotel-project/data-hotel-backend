@@ -33,6 +33,7 @@ employee_data_partial = {
     "nationality": "...",
     "contact": "xxxxx",
     "emergency_num": "yyyyyyyy",
+    "is_working": True,
 }
 
 

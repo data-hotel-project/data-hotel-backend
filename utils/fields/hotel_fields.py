@@ -4,7 +4,6 @@ class HotelFields:
         "name",
         "email",
         "num_rooms",
-        "address",
         "image",
         "image2",
         "image3",
@@ -15,6 +14,7 @@ class HotelFields:
         "full_url3",
         "full_url4",
         "full_url5",
+        "address",
     ]
     read_only_fields = ["id"]
     extra_kwargs = {

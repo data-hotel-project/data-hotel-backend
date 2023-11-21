@@ -12,10 +12,10 @@ class EmployeeFields:
         "job_function",
         "admission_date",
         "is_working",
-        "address",
-        "hotel",
         "is_staff",
         "is_superuser",
+        "hotel",
+        "address",
     ]
     read_only_fields = ["id", "is_superuser"]
     extra_kwargs = {
