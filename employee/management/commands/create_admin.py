@@ -20,7 +20,6 @@ address = Address.objects.create(**address_data)
 hotel_data = {
     "name": f"{get_random_string(12)}",
     "email": f"{get_random_string(12)}@mail.com",
-    "password": "...",
     "num_rooms": 00,
     "address": address,
 }
