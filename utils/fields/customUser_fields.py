@@ -1,4 +1,4 @@
-class GuestFields:
+class CustomUserFields:
     fields = [
         "id",
         "username",
@@ -9,13 +9,13 @@ class GuestFields:
         "contact",
         "contact_aditional",
         "emergency_num",
+        "job_function",
+        "admission_date",
         "is_working",
         "is_staff",
         "is_superuser",
-        "address",
     ]
-    read_only_fields = ["id", "is_superuser", "is_working"]
+    read_only_fields = ["id", "is_superuser"]
     extra_kwargs = {
         "password": {"write_only": True, "required": True},
-        "email": {"required": True},
     }

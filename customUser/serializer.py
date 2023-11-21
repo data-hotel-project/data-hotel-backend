@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from .models import CustomUser
+from employee.models import Employee
+
+from utils.fields.customUser_fields import CustomUserFields
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = "__all__"
-        extra_kwargs = {"password": {"write_only": True}}     
-    
+        model = Employee
+        fields = CustomUserFields.fields
+        extra_kwargs = CustomUserFields.extra_kwargs
