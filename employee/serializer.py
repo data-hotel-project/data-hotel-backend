@@ -83,6 +83,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
                 instance.set_password(value)
             elif key == "address":
                 pass
+            elif key == "is_staff":
+                if not value:
+                    instance.is_staff = False
+                pass
             else:
                 setattr(instance, key, value)
 

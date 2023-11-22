@@ -1,5 +1,8 @@
 import uuid
+
+from cloudinary.models import CloudinaryField
 from django.db import models
+
 from guest.models import Guest
 from hotel.models import Hotel
 
@@ -25,12 +28,16 @@ class Room(models.Model):
     )
     entry_date = models.DateTimeField(null=True)
     departure_date = models.DateTimeField(null=True)
-    daily_rate = models.DecimalField(
-        max_digits=15, decimal_places=2
-    )
+    daily_rate = models.DecimalField(max_digits=15, decimal_places=2)
     total_value = models.DecimalField(
         max_digits=15, decimal_places=2, blank=True, default=0
     )
+
+    image = CloudinaryField("image")
+    image2 = CloudinaryField("image", null=True)
+    image3 = CloudinaryField("image", null=True)
+    image4 = CloudinaryField("image", null=True)
+    image5 = CloudinaryField("image", null=True)
 
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
 
