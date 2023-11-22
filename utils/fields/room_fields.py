@@ -19,6 +19,7 @@ class RoomFields:
         "full_url4",
         "full_url5",
         "hotel",
+        "guest",
     ]
     read_only_fields = ["id"]
     extra_kwargs = {
