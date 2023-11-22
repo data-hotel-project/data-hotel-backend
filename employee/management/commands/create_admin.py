@@ -8,7 +8,7 @@ from datetime import datetime
 import pytz
 
 address_data = {
-    "street": f"{get_random_string(12)}",
+    "street": f"{get_random_string(12)}admin",
     "number": "...",
     "city": "...",
     "state": "...",
@@ -33,7 +33,6 @@ employee_data_partial = {
     "nationality": "...",
     "contact": "xxxxx",
     "emergency_num": "yyyyyyyy",
-    "is_working": True,
 }
 
 

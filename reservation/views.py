@@ -1,10 +1,11 @@
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from employee.permissions import IsEmployee
 
 from utils.permissions import IsAdmin
 
 from .models import Reservation
-from .permissions import IsGuest
+from .permissions import IsGuest, IsGuestOwner
 from .serializer import ReservationSerializer
 
 
@@ -28,7 +29,7 @@ class ReservationListCreateView(generics.ListCreateAPIView):
 
 class ReservationRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsGuest | IsAdmin]
+    permission_classes = [IsGuestOwner | IsEmployee | IsAdmin]
 
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer

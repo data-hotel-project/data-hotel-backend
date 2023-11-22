@@ -49,6 +49,7 @@ MY_APPS = [
     "room",
     "guest",
     "reservation",
+    "corsheaders",
 ]
 
 THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular", "cloudinary"]
@@ -72,6 +73,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    # Adicione outras origens permitidas, se necessário
 ]
 
 ROOT_URLCONF = "_data_hotel.urls"
@@ -142,7 +150,7 @@ SIMPLE_JWT = {
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Sao_Paulo"
 
 USE_I18N = True
 

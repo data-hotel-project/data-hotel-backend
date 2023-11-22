@@ -68,7 +68,6 @@ class EmailOrUsernameModelBackend(ModelBackend):
                 "user": {
                     "id": user.id,
                     "username": user.username,
-                    "is_working": user.is_working,
                     "is_staff": user.is_staff,
                     "is_superuser": user.is_superuser,
                 },

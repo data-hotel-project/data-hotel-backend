@@ -11,7 +11,6 @@ class EmployeeFields:
         "emergency_num",
         "job_function",
         "admission_date",
-        "is_working",
         "is_staff",
         "is_superuser",
         "hotel",
