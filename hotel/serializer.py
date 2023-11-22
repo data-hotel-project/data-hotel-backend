@@ -70,26 +70,28 @@ class HotelSerializer(serializers.ModelSerializer):
 
             existing_address = Address.objects.filter(**combined_data).first()
 
-        if existing_address:
-            hotel = Hotel.objects.filter(address=existing_address).exists()
+            if existing_address:
+                hotel = Hotel.objects.filter(address=existing_address).exists()
 
-            if hotel:
-                raise serializers.ValidationError(
-                    {"address": ["hotel with this address already exists."]}
+                if hotel:
+                    raise serializers.ValidationError(
+                        {"address": ["hotel with this address already exists."]}
+                    )
+
+                instance.address = existing_address
+            else:
+                new_address_instance = Address.objects.create(
+                    street=address_data.get("street", address_instance.street),
+                    number=address_data.get("number", address_instance.number),
+                    city=address_data.get("city", address_instance.city),
+                    state=address_data.get("state", address_instance.state),
+                    complement=address_data.get(
+                        "complement", address_instance.complement
+                    ),
                 )
 
-            instance.address = existing_address
-        else:
-            new_address_instance = Address.objects.create(
-                street=address_data.get("street", address_instance.street),
-                number=address_data.get("number", address_instance.number),
-                city=address_data.get("city", address_instance.city),
-                state=address_data.get("state", address_instance.state),
-                complement=address_data.get("complement", address_instance.complement),
-            )
-
-            instance.address = new_address_instance
-            instance.save()
+                instance.address = new_address_instance
+                instance.save()
 
         for key, value in validated_data.items():
             if key == "password":
