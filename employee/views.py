@@ -1,6 +1,10 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 from utils.auth.authentication import EmailOrUsernameModelBackend
 from utils.permissions import IsAdmin, IsAdminOrReadOnly

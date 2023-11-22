@@ -16,7 +16,6 @@ class Employee(CustomUser):
         max_length=20, choices=FunctionChoice.choices, default=FunctionChoice.REGULAR
     )
     admission_date = models.DateTimeField(auto_now_add=True)
-    is_working = models.BooleanField(default=True)
 
     address = models.ForeignKey(Address, on_delete=models.DO_NOTHING)
 

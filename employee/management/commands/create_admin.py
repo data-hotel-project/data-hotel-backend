@@ -18,7 +18,7 @@ address_data = {
 address = Address.objects.create(**address_data)
 
 hotel_data = {
-    "name": f"{get_random_string(12)}",
+    "name": f"{get_random_string(12)}admin",
     "email": f"{get_random_string(12)}@mail.com",
     "num_rooms": 00,
     "address": address,
@@ -33,6 +33,7 @@ employee_data_partial = {
     "nationality": "...",
     "contact": "xxxxx",
     "emergency_num": "yyyyyyyy",
+    "is_working": True,
 }
 
 

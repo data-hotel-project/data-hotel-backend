@@ -8,8 +8,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('address', '0001_initial'),
         ('customUser', '0001_initial'),
+        ('address', '0001_initial'),
     ]
 
     operations = [

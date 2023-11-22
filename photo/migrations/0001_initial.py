@@ -6,8 +6,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("hotel", "0001_initial"),
-        ("room", "0001_initial"),
+        ('room', '0001_initial'),
+        ('hotel', '0001_initial'),
     ]
 
     operations = [

@@ -20,6 +20,10 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=50, unique=True)),
                 ('num_rooms', models.PositiveIntegerField()),
                 ('image', cloudinary.models.CloudinaryField(max_length=255, verbose_name='image')),
+                ('image2', cloudinary.models.CloudinaryField(max_length=255, null=True, verbose_name='image')),
+                ('image3', cloudinary.models.CloudinaryField(max_length=255, null=True, verbose_name='image')),
+                ('image4', cloudinary.models.CloudinaryField(max_length=255, null=True, verbose_name='image')),
+                ('image5', cloudinary.models.CloudinaryField(max_length=255, null=True, verbose_name='image')),
                 ('address', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to='address.address')),
             ],
             options={
