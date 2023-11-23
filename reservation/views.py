@@ -24,8 +24,10 @@ class ReservationListCreateView(generics.ListCreateAPIView):
         hotel_id_parameter = self.request.data["hotel"]
         hotel_reservations = Reservation.objects.filter(hotel=hotel_id_parameter)
         hotel = Hotel.objects.filter(id=hotel_id_parameter).first()
+        hotel_occupied_rooms = Hotel.objects.filter(id=hotel_id_parameter, status="Occupied")
 
         rsv_list = []
+        room_list = []
         dt_entry_date = datetime.fromisoformat(self.request.data["entry_date"])
 
         for rsv in hotel_reservations:
@@ -33,8 +35,14 @@ class ReservationListCreateView(generics.ListCreateAPIView):
 
             if rsv_departure_date >= dt_entry_date:
                 rsv_list.append(rsv)
+        
+        for room in hotel_occupied_rooms:
+            room_departure_date = room.departure_date.replace(tzinfo=None)
 
-        if hotel.num_rooms <= len(rsv_list):
+            if room_departure_date <= dt_entry_date:
+                room_list.append(room)
+
+        if hotel.num_rooms <= len(rsv_list) and len(room_list) >= len(rsv_list):
             return Response({"message": "Hotel is full"}, status=400)
 
         return super().create(request, *args, **kwargs)

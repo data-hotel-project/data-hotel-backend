@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from math import ceil
 from django.utils import timezone
@@ -39,45 +40,78 @@ class RoomSerializer(serializers.ModelSerializer):
             return obj.image5.url
 
     def update(self, instance: Room, validated_data: dict) -> Room:
-        room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
-        room = Room.objects.filter(id=room_id_parameter).first()
-        rooms_hotel = Room.objects.filter(hotel=room.hotel, status="Free")
+        status_data = validated_data.get('status', {})
 
-        if len(rooms_hotel) == 0:
-            raise serializers.ValidationError({"message": "There's no available rooms"})
+        if status_data != 'Free':
+            room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
+            room = Room.objects.filter(id=room_id_parameter).first()
+            rooms_hotel = Room.objects.filter(hotel=room.hotel, status="Free")
 
-        hotel_reservations = Reservation.objects.filter(hotel=room.hotel)
+            if len(rooms_hotel) == 0:
+                raise serializers.ValidationError({"message": "There's no available rooms"})
 
-        from ipdb import set_trace
+            hotel_reservations = Reservation.objects.filter(hotel=room.hotel)
 
-        for rsv in hotel_reservations:
-            rsv_entry_date = rsv.entry_date.date()
-            set_trace()
+            if rooms_hotel > hotel_reservations:
+                rsv_list = []
+                rsv_dprt_list = []
+                guest_data = validated_data.get("guest", {})
+                departure_date_data = validated_data.get("departure_date", {})
 
-        guest_data = validated_data.get("guest", {})
-        departure_date_data = validated_data.get("departure_date", {})
+                # from ipdb import set_trace
 
-        if guest_data and departure_date_data:
-            instance.entry_date = timezone.now()
+                for rsv in hotel_reservations:
+                    rsv_entry_date = rsv.entry_date.date()
 
-            time_difference = departure_date_data - instance.entry_date
+                    if rsv_entry_date != timezone.now().date():
+                        rsv_list.append(rsv)
 
-            difference_in_seconds = Decimal(time_difference.total_seconds())
+                if len(rooms_hotel) <= len(rsv_list):
+                    raise serializers.ValidationError(
+                        {"message": "There's no available rooms."}
+                    )
 
-            days_total = difference_in_seconds / 60 / 60 / 24
+                for rsv in rsv_list:
+                    rsv_entry_date = rsv.entry_date.date()
 
-            if days_total > time_difference.days:
-                instance.total_value = ceil(days_total) * instance.daily_rate
+                    if rsv_entry_date < departure_date_data.date():
+                        # set_trace()
+                        rsv_dprt_list.append(rsv)
+
+                if len(rsv_list) == len(rsv_dprt_list):
+                    raise serializers.ValidationError(
+                        {"message": "There's no available rooms."}
+                    )
+
+                if guest_data and departure_date_data:
+                    instance.entry_date = timezone.now()
+
+                    time_difference = departure_date_data - instance.entry_date
+
+                    difference_in_seconds = Decimal(time_difference.total_seconds())
+
+                    days_total = difference_in_seconds / 60 / 60 / 24
+
+                    if days_total > time_difference.days:
+                        instance.total_value = ceil(days_total) * instance.daily_rate
+                    
+                    instance.guest = guest_data
+
+                else:
+                    raise serializers.ValidationError(
+                        {"errors": ["Guest can only be passed along with the departure_date."]}
+                    )
 
         else:
-            raise serializers.ValidationError(
-                {"errors": ["Guest can only be passed along with the departure_date."]}
-            )
+            instance.entry_date = None
+            instance.guest = None
+            instance.total_value = "0.00"
 
         for key, value in validated_data.items():
             if key != "guest":
                 setattr(instance, key, value)
 
+        
         instance.save()
         return instance
 
