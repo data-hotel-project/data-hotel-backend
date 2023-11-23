@@ -10,6 +10,7 @@ from utils.fields.room_fields import RoomFields
 from .models import Room
 from rest_framework.response import Response
 
+
 class RoomSerializer(serializers.ModelSerializer):
     full_url = serializers.SerializerMethodField()
     full_url2 = serializers.SerializerMethodField()
@@ -38,20 +39,20 @@ class RoomSerializer(serializers.ModelSerializer):
             return obj.image5.url
 
     def update(self, instance: Room, validated_data: dict) -> Room:
-        room_id_parameter = self.context['request'].parser_context['kwargs']['pk']
+        room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
         room = Room.objects.filter(id=room_id_parameter).first()
-        rooms_hotel = Room.objects.filter(hotel=room.hotel, status='Free')
+        rooms_hotel = Room.objects.filter(hotel=room.hotel, status="Free")
 
         if len(rooms_hotel) == 0:
             raise serializers.ValidationError({"message": "There's no available rooms"})
-        
+
         hotel_reservations = Reservation.objects.filter(hotel=room.hotel)
 
+        from ipdb import set_trace
+
         for rsv in hotel_reservations:
-            # from ipdb import set_trace
-            # set_trace()
-            # ...
             rsv_entry_date = rsv.entry_date.date()
+            set_trace()
 
         guest_data = validated_data.get("guest", {})
         departure_date_data = validated_data.get("departure_date", {})
