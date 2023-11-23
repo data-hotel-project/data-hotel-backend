@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Employee',
+            name="Employee",
             fields=[
                 ('customuser_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('job_function', models.CharField(choices=[('Admin', 'Admin'), ('Receptionist', 'Receptionist'), ('Regular', 'Regular')], default='Regular', max_length=20)),
@@ -27,11 +26,11 @@ class Migration(migrations.Migration):
                 ('hotel', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='employees', to='hotel.hotel')),
             ],
             options={
-                'ordering': ['id'],
+                "ordering": ["id"],
             },
-            bases=('customUser.customuser',),
+            bases=("customUser.customuser",),
             managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
+                ("objects", django.contrib.auth.models.UserManager()),
             ],
         ),
     ]

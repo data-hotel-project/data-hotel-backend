@@ -7,16 +7,15 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('address', '0001_initial'),
+        ("address", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Hotel',
+            name="Hotel",
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=50, unique=True)),
@@ -30,7 +29,7 @@ class Migration(migrations.Migration):
                 ('address', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to='address.address')),
             ],
             options={
-                'ordering': ['id'],
+                "ordering": ["id"],
             },
         ),
     ]
