@@ -1,51 +1,22 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from employee.permissions import IsEmployee
 
+from employee.permissions import IsEmployee
+from reservation.mixins import ReservationMixin
 from utils.permissions import IsAdmin
 
 from .models import Reservation
 from .permissions import IsGuest, IsGuestOwner
 from .serializer import ReservationSerializer
 
-from rest_framework.response import Response
-from datetime import datetime
-from hotel.models import Hotel
 
-
-class ReservationListCreateView(generics.ListCreateAPIView):
+class ReservationListCreateView(ReservationMixin, generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsGuest]
 
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
-
-    def create(self, request, *args, **kwargs):
-        hotel_id_parameter = self.request.data["hotel"]
-        hotel_reservations = Reservation.objects.filter(hotel=hotel_id_parameter)
-        hotel = Hotel.objects.filter(id=hotel_id_parameter).first()
-        hotel_occupied_rooms = Hotel.objects.filter(id=hotel_id_parameter, status="Occupied")
-
-        rsv_list = []
-        room_list = []
-        dt_entry_date = datetime.fromisoformat(self.request.data["entry_date"])
-
-        for rsv in hotel_reservations:
-            rsv_departure_date = rsv.departure_date.replace(tzinfo=None)
-
-            if rsv_departure_date >= dt_entry_date:
-                rsv_list.append(rsv)
-        
-        for room in hotel_occupied_rooms:
-            room_departure_date = room.departure_date.replace(tzinfo=None)
-
-            if room_departure_date <= dt_entry_date:
-                room_list.append(room)
-
-        if hotel.num_rooms <= len(rsv_list) and len(room_list) >= len(rsv_list):
-            return Response({"message": "Hotel is full"}, status=400)
-
-        return super().create(request, *args, **kwargs)
 
     def get_queryset(self):
         hotel_id_parameter = self.request.query_params.get("hotel_id")
@@ -79,3 +50,13 @@ class ReservationRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView)
     #         instance._prefetched_objects_cache = {}
 
     #     return Response(serializer.data)
+
+
+class ReservationDeleteAllView(generics.DestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdmin]
+
+    def destroy(self, request, *args, **kwargs):
+        Reservation.objects.all().delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -19,7 +19,9 @@ class GetLoggedUser(RetrieveAPIView):
         user_id = self.request.auth.payload["user_id"]
         try:
             user = Employee.objects.get(id=user_id)
+
             return user
+
         except ObjectDoesNotExist:
             user = Guest.objects.get(id=user_id)
             return user
