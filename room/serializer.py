@@ -40,75 +40,109 @@ class RoomSerializer(serializers.ModelSerializer):
     def update(self, instance: Room, validated_data: dict) -> Room:
         status_data = validated_data.get("status", {})
 
-        if status_data != "Free":
+        if status_data == "Occupied":
             room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
             room = Room.objects.filter(id=room_id_parameter).first()
             rooms_free = Room.objects.filter(hotel=room.hotel, status="Free")
+            guest_data = validated_data.get("guest", {})
+            occupied_rooms = Room.objects.filter(hotel=room.hotel, status="Occupied")
 
-            if len(rooms_free) == 0:
+            if len(rooms_free) == 0 and not guest_data:
                 raise serializers.ValidationError(
                     {"message": "There's no available rooms"}
                 )
 
+            dt_departure_date = validated_data.get("departure_date", {})
             all_reservations = Reservation.objects.filter(hotel=room.hotel)
+            dt_departure_date = dt_departure_date.date()
 
-            if len(rooms_free) > len(all_reservations):
-                rsv_list = []
-                rsv_dprt_list = []
-                guest_data = validated_data.get("guest", {})
-                departure_date_data = validated_data.get("departure_date", {})
-
-                # from ipdb import set_trace
+            if all_reservations:
+                rsv_count_match_primary = 0
+                rsv_list_guest = []
+                rsv_count_match = 0
+                room_list = 0
 
                 for rsv in all_reservations:
-                    # Colocar 'if' para verificar se existe reserva no 'all_reservations'
                     rsv_entry_date = rsv.entry_date.date()
 
-                    if rsv_entry_date != timezone.now().date():
-                        rsv_list.append(rsv)
+                    if dt_departure_date > rsv_entry_date:
+                        rsv_count_match_primary += 1
 
-                if len(rooms_free) <= len(rsv_list):
+                reservations_guest = Reservation.objects.filter(guest=guest_data)
+
+                if reservations_guest:
+                    for rsv_guest in reservations_guest:
+                        rsv_dpt_date = rsv_guest.departure_date.date()
+                        rsv_guest_entry_date = rsv_guest.entry_date.date()
+                        current_date = timezone.now()
+
+                        if rsv_guest_entry_date == current_date.date():
+                            rsv_list_guest.append(rsv_guest)
+
+                            if dt_departure_date:
+                                if rsv_dpt_date < dt_departure_date:
+                                    for rsv in all_reservations:
+                                        rsv_entry_date = rsv.entry_date.date()
+
+                                        if dt_departure_date > rsv_entry_date:
+                                            if rsv_guest != rsv:
+                                                rsv_count_match += 1
+
+                                    for room in occupied_rooms:
+                                        room_departure_date = (
+                                            room.departure_date.replace(tzinfo=None)
+                                        )
+
+                                        if (
+                                            rsv_guest_entry_date
+                                            <= room_departure_date.date()
+                                        ):
+                                            room_list += 1
+
+                                    if (
+                                        len(rooms_free) + room_list - rsv_count_match
+                                        <= 0
+                                    ):
+                                        raise serializers.ValidationError(
+                                            {"message": "There's no available rooms."}
+                                        )
+
+                if (
+                    len(rooms_free) <= rsv_count_match_primary
+                    and len(rsv_list_guest) == 0
+                ):
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
                     )
 
-                for rsv in rsv_list:
-                    rsv_entry_date = rsv.entry_date.date()
+                if len(rsv_list_guest) > 0:
+                    rsv_list_guest[0].delete()
 
-                    if rsv_entry_date < departure_date_data.date():
-                        # set_trace()
-                        rsv_dprt_list.append(rsv)
+            if guest_data and dt_departure_date:
+                instance.entry_date = timezone.now()
 
-                if len(rsv_list) == len(rsv_dprt_list):
-                    raise serializers.ValidationError(
-                        {"message": "There's no available rooms."}
-                    )
+                time_difference = dt_departure_date - instance.entry_date.date()
 
-                if guest_data and departure_date_data:
-                    instance.entry_date = timezone.now()
+                difference_in_seconds = Decimal(time_difference.total_seconds())
 
-                    time_difference = departure_date_data - instance.entry_date
+                days_total = difference_in_seconds / 60 / 60 / 24
 
-                    difference_in_seconds = Decimal(time_difference.total_seconds())
+                if days_total > time_difference.days:
+                    instance.total_value = ceil(days_total) * instance.daily_rate
+                instance.guest = guest_data
 
-                    days_total = difference_in_seconds / 60 / 60 / 24
+            else:
+                raise serializers.ValidationError(
+                    {
+                        "errors": [
+                            "Guest can only be passed along with the departure_date."
+                        ]
+                    }
+                )
 
-                    if days_total > time_difference.days:
-                        instance.total_value = ceil(days_total) * instance.daily_rate
-
-                    instance.guest = guest_data
-
-                else:
-                    raise serializers.ValidationError(
-                        {
-                            "errors": [
-                                "Guest can only be passed along with the departure_date."
-                            ]
-                        }
-                    )
-
-        else:
+        elif status_data == "Free":
             instance.entry_date = None
+            instance.departure_date = None
             instance.guest = None
             instance.total_value = "0.00"
 
