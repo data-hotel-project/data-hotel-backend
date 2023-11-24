@@ -1,15 +1,13 @@
-from datetime import datetime
 from decimal import Decimal
 from math import ceil
+
 from django.utils import timezone
 from rest_framework import serializers
-from hotel.models import Hotel
-from reservation.models import Reservation
 
+from reservation.models import Reservation
 from utils.fields.room_fields import RoomFields
 
 from .models import Room
-from rest_framework.response import Response
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -40,19 +38,21 @@ class RoomSerializer(serializers.ModelSerializer):
             return obj.image5.url
 
     def update(self, instance: Room, validated_data: dict) -> Room:
-        status_data = validated_data.get('status', {})
+        status_data = validated_data.get("status", {})
 
-        if status_data != 'Free':
+        if status_data != "Free":
             room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
             room = Room.objects.filter(id=room_id_parameter).first()
-            rooms_hotel = Room.objects.filter(hotel=room.hotel, status="Free")
+            rooms_free = Room.objects.filter(hotel=room.hotel, status="Free")
 
-            if len(rooms_hotel) == 0:
-                raise serializers.ValidationError({"message": "There's no available rooms"})
+            if len(rooms_free) == 0:
+                raise serializers.ValidationError(
+                    {"message": "There's no available rooms"}
+                )
 
-            hotel_reservations = Reservation.objects.filter(hotel=room.hotel)
+            all_reservations = Reservation.objects.filter(hotel=room.hotel)
 
-            if rooms_hotel > hotel_reservations:
+            if len(rooms_free) > len(all_reservations):
                 rsv_list = []
                 rsv_dprt_list = []
                 guest_data = validated_data.get("guest", {})
@@ -60,13 +60,14 @@ class RoomSerializer(serializers.ModelSerializer):
 
                 # from ipdb import set_trace
 
-                for rsv in hotel_reservations:
+                for rsv in all_reservations:
+                    # Colocar 'if' para verificar se existe reserva no 'all_reservations'
                     rsv_entry_date = rsv.entry_date.date()
 
                     if rsv_entry_date != timezone.now().date():
                         rsv_list.append(rsv)
 
-                if len(rooms_hotel) <= len(rsv_list):
+                if len(rooms_free) <= len(rsv_list):
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
                     )
@@ -94,12 +95,16 @@ class RoomSerializer(serializers.ModelSerializer):
 
                     if days_total > time_difference.days:
                         instance.total_value = ceil(days_total) * instance.daily_rate
-                    
+
                     instance.guest = guest_data
 
                 else:
                     raise serializers.ValidationError(
-                        {"errors": ["Guest can only be passed along with the departure_date."]}
+                        {
+                            "errors": [
+                                "Guest can only be passed along with the departure_date."
+                            ]
+                        }
                     )
 
         else:
@@ -111,7 +116,6 @@ class RoomSerializer(serializers.ModelSerializer):
             if key != "guest":
                 setattr(instance, key, value)
 
-        
         instance.save()
         return instance
 
