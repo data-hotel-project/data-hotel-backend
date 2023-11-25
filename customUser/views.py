@@ -2,8 +2,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import status
 
 from guest.models import Guest
+from hotel.serializer import HotelSerializer
 from utils.permissions import IsAuthenticated
 
 from employee.models import Employee
@@ -28,6 +30,22 @@ class GetLoggedUser(RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         user = self.get_object()
-        serializer = self.get_serializer(user)
+        if user is not None:
+            serializer = self.get_serializer(user)
+            hotel_serializer = (
+                HotelSerializer(user.hotel) if hasattr(user, "hotel") else None
+            )
 
-        return Response(serializer.data)
+            if hotel_serializer:
+                response_data = {
+                    "user": serializer.data,
+                    "hotel": hotel_serializer.data["id"] if hotel_serializer else None,
+                }
+            else:
+                return Response(serializer.data)
+
+            return Response(response_data)
+        else:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
