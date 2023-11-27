@@ -13,6 +13,7 @@ class CustomUserFields:
         "admission_date",
         "is_staff",
         "is_superuser",
+        "address",
         # "hotel",
     ]
     read_only_fields = ["id", "is_superuser"]
