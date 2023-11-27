@@ -118,6 +118,8 @@ class RoomSerializer(serializers.ModelSerializer):
                 if len(rsv_list_guest) > 0:
                     rsv_list_guest[0].delete()
 
+            from ipdb import set_trace
+            
             if guest_data and dt_departure_date:
                 instance.entry_date = timezone.now()
 
@@ -128,6 +130,7 @@ class RoomSerializer(serializers.ModelSerializer):
                 days_total = difference_in_seconds / 60 / 60 / 24
 
                 if days_total > time_difference.days:
+                    
                     instance.total_value = ceil(days_total) * instance.daily_rate
                 instance.guest = guest_data
 

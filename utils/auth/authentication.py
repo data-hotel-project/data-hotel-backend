@@ -28,7 +28,6 @@ class EmailOrUsernameModelBackend(ModelBackend):
 
         if r.match(username):
             try:
-                print("Entrou email")
                 user = userModel.objects.get(email=username)
             except userModel.DoesNotExist:
                 raise serializers.ValidationError(
@@ -37,7 +36,6 @@ class EmailOrUsernameModelBackend(ModelBackend):
 
         else:
             try:
-                print("Entrou Username")
                 user = userModel.objects.get(username=username)
             except userModel.DoesNotExist:
                 raise serializers.ValidationError(
