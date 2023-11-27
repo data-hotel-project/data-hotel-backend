@@ -19,26 +19,28 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 
-drfpatterns = [
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path(
-        "api/docs/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
-]
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/address/", include("address.urls")),
-    path("api/photo/", include("photo.urls")),
-    path("api/logged/", include("customUser.urls")),
-    path("api/hotel/", include("hotel.urls")),
-    path("api/room/", include("room.urls")),
-    path("api/guest/", include("guest.urls")),
-    path("api/employee/", include("employee.urls")),
-    path("api/reservation/", include("reservation.urls")),
+    path("address/", include("address.urls")),
+    path("photo/", include("photo.urls")),
+    path("logged/", include("customUser.urls")),
+    path("hotel/", include("hotel.urls")),
+    path("room/", include("room.urls")),
+    path("guest/", include("guest.urls")),
+    path("employee/", include("employee.urls")),
+    path("reservation/", include("reservation.urls")),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
+    path('api/docs/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

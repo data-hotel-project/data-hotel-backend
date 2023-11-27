@@ -1,0 +1,1888 @@
+openapi: 3.0.3
+info:
+  title: Your Project API
+  version: 1.0.0
+  description: Your project description
+paths:
+  /api/address/:
+    get:
+      operationId: api_address_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+          description: ''
+    post:
+      operationId: api_address_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Address'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Address'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+          description: ''
+  /api/address/{id}/:
+    get:
+      operationId: api_address_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+          description: ''
+    put:
+      operationId: api_address_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Address'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Address'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+          description: ''
+    patch:
+      operationId: api_address_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAddress'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+          description: ''
+    delete:
+      operationId: api_address_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/employee/:
+    get:
+      operationId: api_employee_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+          description: ''
+    post:
+      operationId: api_employee_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Employee'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+  /api/employee/{id}/:
+    get:
+      operationId: api_employee_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    put:
+      operationId: api_employee_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Employee'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    patch:
+      operationId: api_employee_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    delete:
+      operationId: api_employee_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/employee/all/:
+    get:
+      operationId: api_employee_all_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+          description: ''
+  /api/employee/login/:
+    post:
+      operationId: api_employee_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      responses:
+        '200':
+          description: No response body
+  /api/employee/refresh/:
+    post:
+      operationId: api_employee_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/guest/:
+    get:
+      operationId: api_guest_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Guest'
+          description: ''
+    post:
+      operationId: api_guest_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Guest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Guest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Guest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+  /api/guest/{id}/:
+    get:
+      operationId: api_guest_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+    put:
+      operationId: api_guest_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Guest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Guest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Guest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+    patch:
+      operationId: api_guest_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGuest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGuest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGuest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+          description: ''
+    delete:
+      operationId: api_guest_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/guest/login/:
+    post:
+      operationId: api_guest_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      responses:
+        '200':
+          description: No response body
+  /api/guest/refresh/:
+    post:
+      operationId: api_guest_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/hotel/:
+    get:
+      operationId: api_hotel_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hotel'
+          description: ''
+    post:
+      operationId: api_hotel_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hotel'
+          description: ''
+  /api/hotel/{id}/:
+    get:
+      operationId: api_hotel_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hotel'
+          description: ''
+    put:
+      operationId: api_hotel_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hotel'
+          description: ''
+    patch:
+      operationId: api_hotel_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHotel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHotel'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHotel'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hotel'
+          description: ''
+    delete:
+      operationId: api_hotel_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/logged/:
+    get:
+      operationId: api_logged_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+  /api/photo/:
+    get:
+      operationId: api_photo_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Photo'
+          description: ''
+    post:
+      operationId: api_photo_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Photo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Photo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Photo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+          description: ''
+  /api/photo/{id}/:
+    get:
+      operationId: api_photo_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+          description: ''
+    put:
+      operationId: api_photo_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Photo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Photo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Photo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+          description: ''
+    patch:
+      operationId: api_photo_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPhoto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPhoto'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+          description: ''
+    delete:
+      operationId: api_photo_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/reservation/:
+    get:
+      operationId: api_reservation_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+          description: ''
+    post:
+      operationId: api_reservation_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+  /api/reservation/{id}/:
+    get:
+      operationId: api_reservation_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+    put:
+      operationId: api_reservation_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+    patch:
+      operationId: api_reservation_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReservation'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+    delete:
+      operationId: api_reservation_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/reservation/deleteAll:
+    delete:
+      operationId: api_reservation_deleteAll_destroy
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/room/:
+    get:
+      operationId: api_room_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+          description: ''
+    post:
+      operationId: api_room_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+  /api/room/{id}/:
+    get:
+      operationId: api_room_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    put:
+      operationId: api_room_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    patch:
+      operationId: api_room_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    delete:
+      operationId: api_room_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        street:
+          type: string
+          maxLength: 50
+        number:
+          type: string
+          maxLength: 5
+        city:
+          type: string
+          maxLength: 50
+        state:
+          type: string
+          maxLength: 3
+        complement:
+          type: string
+          maxLength: 100
+      required:
+      - city
+      - id
+      - number
+      - state
+      - street
+    CustomUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 50
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        nationality:
+          type: string
+          maxLength: 20
+        contact:
+          type: string
+          maxLength: 50
+        contact_aditional:
+          type: string
+          maxLength: 11
+        emergency_num:
+          type: string
+          maxLength: 11
+        job_function:
+          $ref: '#/components/schemas/JobFunctionEnum'
+        admission_date:
+          type: string
+          format: date-time
+          readOnly: true
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+      - address
+      - admission_date
+      - contact
+      - emergency_num
+      - id
+      - nationality
+      - password
+      - username
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        nationality:
+          type: string
+          maxLength: 20
+        contact:
+          type: string
+          maxLength: 50
+        contact_aditional:
+          type: string
+          maxLength: 11
+        emergency_num:
+          type: string
+          maxLength: 11
+        job_function:
+          $ref: '#/components/schemas/JobFunctionEnum'
+        admission_date:
+          type: string
+          format: date-time
+          readOnly: true
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        hotel:
+          type: string
+          format: uuid
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+      - address
+      - admission_date
+      - contact
+      - email
+      - emergency_num
+      - hotel
+      - id
+      - nationality
+      - password
+      - username
+    Guest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        nationality:
+          type: string
+          maxLength: 20
+        contact:
+          type: string
+          maxLength: 50
+        contact_aditional:
+          type: string
+          maxLength: 11
+        emergency_num:
+          type: string
+          maxLength: 11
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+      - address
+      - contact
+      - email
+      - emergency_num
+      - id
+      - nationality
+      - password
+      - username
+    Hotel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 50
+        num_rooms:
+          type: integer
+        image:
+          type: string
+          writeOnly: true
+        image2:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image3:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image4:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image5:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        full_url:
+          type: string
+          readOnly: true
+        full_url2:
+          type: string
+          readOnly: true
+        full_url3:
+          type: string
+          readOnly: true
+        full_url4:
+          type: string
+          readOnly: true
+        full_url5:
+          type: string
+          readOnly: true
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+      - address
+      - email
+      - full_url
+      - full_url2
+      - full_url3
+      - full_url4
+      - full_url5
+      - id
+      - image
+      - name
+      - num_rooms
+    JobFunctionEnum:
+      enum:
+      - Admin
+      - Receptionist
+      - Regular
+      type: string
+      description: |-
+        * `Admin` - Admin
+        * `Receptionist` - Receptionist
+        * `Regular` - Regular
+    PatchedAddress:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        street:
+          type: string
+          maxLength: 50
+        number:
+          type: string
+          maxLength: 5
+        city:
+          type: string
+          maxLength: 50
+        state:
+          type: string
+          maxLength: 3
+        complement:
+          type: string
+          maxLength: 100
+    PatchedEmployee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        nationality:
+          type: string
+          maxLength: 20
+        contact:
+          type: string
+          maxLength: 50
+        contact_aditional:
+          type: string
+          maxLength: 11
+        emergency_num:
+          type: string
+          maxLength: 11
+        job_function:
+          $ref: '#/components/schemas/JobFunctionEnum'
+        admission_date:
+          type: string
+          format: date-time
+          readOnly: true
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        hotel:
+          type: string
+          format: uuid
+        address:
+          $ref: '#/components/schemas/Address'
+    PatchedGuest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        nationality:
+          type: string
+          maxLength: 20
+        contact:
+          type: string
+          maxLength: 50
+        contact_aditional:
+          type: string
+          maxLength: 11
+        emergency_num:
+          type: string
+          maxLength: 11
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        address:
+          $ref: '#/components/schemas/Address'
+    PatchedHotel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 50
+        num_rooms:
+          type: integer
+        image:
+          type: string
+          writeOnly: true
+        image2:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image3:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image4:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image5:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        full_url:
+          type: string
+          readOnly: true
+        full_url2:
+          type: string
+          readOnly: true
+        full_url3:
+          type: string
+          readOnly: true
+        full_url4:
+          type: string
+          readOnly: true
+        full_url5:
+          type: string
+          readOnly: true
+        address:
+          $ref: '#/components/schemas/Address'
+    PatchedPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        file:
+          type: string
+          format: uri
+        hotel:
+          type: string
+          format: uuid
+          nullable: true
+        room:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedReservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        quantity:
+          type: integer
+        entry_date:
+          type: string
+          format: date-time
+        departure_date:
+          type: string
+          format: date-time
+        guest:
+          type: string
+          format: uuid
+          readOnly: true
+        hotel:
+          type: string
+          format: uuid
+    PatchedRoom:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        number:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        quantity:
+          type: integer
+        entry_date:
+          type: string
+          format: date-time
+          nullable: true
+        departure_date:
+          type: string
+          format: date-time
+          nullable: true
+        daily_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+        total_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+        image:
+          type: string
+          writeOnly: true
+        image2:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image3:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image4:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image5:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        full_url:
+          type: string
+          readOnly: true
+        full_url2:
+          type: string
+          readOnly: true
+        full_url3:
+          type: string
+          readOnly: true
+        full_url4:
+          type: string
+          readOnly: true
+        full_url5:
+          type: string
+          readOnly: true
+        hotel:
+          type: string
+          format: uuid
+        guest:
+          type: string
+          format: uuid
+          nullable: true
+    Photo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        file:
+          type: string
+          format: uri
+        hotel:
+          type: string
+          format: uuid
+          nullable: true
+        room:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - file
+      - id
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        quantity:
+          type: integer
+        entry_date:
+          type: string
+          format: date-time
+        departure_date:
+          type: string
+          format: date-time
+        guest:
+          type: string
+          format: uuid
+          readOnly: true
+        hotel:
+          type: string
+          format: uuid
+      required:
+      - departure_date
+      - entry_date
+      - guest
+      - hotel
+      - id
+      - quantity
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        number:
+          type: integer
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        quantity:
+          type: integer
+        entry_date:
+          type: string
+          format: date-time
+          nullable: true
+        departure_date:
+          type: string
+          format: date-time
+          nullable: true
+        daily_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+        total_value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+        image:
+          type: string
+          writeOnly: true
+        image2:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image3:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image4:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        image5:
+          type: string
+          writeOnly: true
+          nullable: true
+          title: Image
+        full_url:
+          type: string
+          readOnly: true
+        full_url2:
+          type: string
+          readOnly: true
+        full_url3:
+          type: string
+          readOnly: true
+        full_url4:
+          type: string
+          readOnly: true
+        full_url5:
+          type: string
+          readOnly: true
+        hotel:
+          type: string
+          format: uuid
+        guest:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - daily_rate
+      - full_url
+      - full_url2
+      - full_url3
+      - full_url4
+      - full_url5
+      - hotel
+      - id
+      - image
+      - number
+      - quantity
+    StatusEnum:
+      enum:
+      - Free
+      - Occupied
+      - Cleaning
+      - Under maintenance
+      type: string
+      description: |-
+        * `Free` - Free
+        * `Occupied` - Occupied
+        * `Cleaning` - Cleaning
+        * `Under maintenance` - Maintenance
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
