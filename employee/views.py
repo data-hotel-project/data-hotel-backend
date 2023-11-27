@@ -3,6 +3,7 @@ from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -63,6 +64,14 @@ class EmployeeRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     lookup_url_kwarg = "pk"
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        instance.is_staff = False
+        instance.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EmployeeTokenView(TokenObtainPairView):
