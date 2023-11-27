@@ -179,3 +179,23 @@ cloudinary.config(
 AUTHENTICATION_BACKENDS = ["utils.auth.authentication.EmailOrUsernameModelBackend"]
 
 AUTH_USER_MODEL = "customUser.CustomUser"
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
+'''
+TITLE: título da sua API.
+DESCRIPTION: descrição do que sua API foi projetada para fazer.
+VERSION: aqui você pode definir a versão se sua API
+SERVE_INCLUDE_SCHEMA: se setado como True, define um endpoint schema na visualização de sua documentação.
+'''
