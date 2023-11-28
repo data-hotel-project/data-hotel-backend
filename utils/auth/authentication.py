@@ -11,7 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class EmailOrUsernameModelBackend(ModelBackend):
     def get_user_model(self, request):
-        url_route = request.path_info.split("/")[2]
+        url_route = request.path_info.split("/")[1]
 
         return (
             Guest
