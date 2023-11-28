@@ -37,10 +37,10 @@ class GetLoggedUser(RetrieveAPIView):
             )
 
             response_data = {
-                    "user": serializer.data,
-                    "hotel": hotel_serializer.data["id"] if hotel_serializer else None,
-                }
-            
+                "user": serializer.data,
+                "hotel": hotel_serializer.data["id"] if hotel_serializer else None,
+            }
+
             return Response(response_data)
         else:
             return Response(
