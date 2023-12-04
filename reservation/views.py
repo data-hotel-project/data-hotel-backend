@@ -37,6 +37,7 @@ class ReservationRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView)
     serializer_class = ReservationSerializer
     lookup_url_kwarg = "pk"
 
+
 class ReservationDeleteAllView(generics.DestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdmin]

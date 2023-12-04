@@ -1,12 +1,12 @@
-from rest_framework import generics
-
+from rest_framework import generics, status
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from utils.permissions import IsAdminOrReadOnly
+from utils.permissions import IsAdmin, IsAdminOrReadOnly
+
 from .models import Room
-from .serializer import RoomSerializer
 from .permissions import IsStaff
-from utils.permissions import IsAdmin
+from .serializer import RoomSerializer
 
 
 class RoomView(generics.ListCreateAPIView):
@@ -31,3 +31,13 @@ class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     lookup_url_kwarg = "pk"
+
+
+class RoomDeleteAllView(generics.DestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdmin]
+
+    def destroy(self, request, *args, **kwargs):
+        Room.objects.all().delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

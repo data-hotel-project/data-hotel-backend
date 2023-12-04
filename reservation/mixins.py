@@ -22,8 +22,10 @@ class ReservationMixin:
             self.request.data["departure_date"]
         ).date()
 
+        # from ipdb import set_trace
+
         if all_reservations:
-            room_count = loopingRooms(occupied_rooms, dt_entry_date)
+            room_count = loopingRooms(occupied_rooms, dt_entry_date, hotel_id_parameter)
 
             for rsv in all_reservations:
                 rsv_departure_date = rsv.departure_date.replace(tzinfo=None)
