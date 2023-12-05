@@ -1,7 +1,7 @@
 from reservation.models import Reservation
 
 
-def loopingRooms(rooms, dt_entry_date, hotel_id_parameter=None):
+def loopingRooms(rooms, dt_entry_date, dt_quantity=None, hotel_id_parameter=None):
     counter = 0
     all_reservations = Reservation.objects.filter(hotel=hotel_id_parameter)
 
@@ -11,7 +11,7 @@ def loopingRooms(rooms, dt_entry_date, hotel_id_parameter=None):
         room_entry_date = room.entry_date.replace(tzinfo=None)
         room_departure_date = room.departure_date.replace(tzinfo=None)
 
-        if dt_entry_date >= room_departure_date.date():
+        if dt_entry_date >= room_departure_date.date() and dt_quantity <= room.quantity:
             counter += 1
 
         else:
@@ -22,6 +22,7 @@ def loopingRooms(rooms, dt_entry_date, hotel_id_parameter=None):
                     if (
                         room_entry_date.date() < rsv_entry_date.date()
                         and room_departure_date.date() <= rsv_entry_date.date()
+                        and room.quantity >= rsv.quantity
                     ):
                         rsv_list.append(rsv)
 
@@ -60,6 +61,7 @@ def loopingRooms(rooms, dt_entry_date, hotel_id_parameter=None):
 
 def checkReservationPeriod(dt_entry, dt_departure, rsv_entry, rsv_departure):
     boolean = False
+
     if (
         dt_entry >= rsv_entry.date()
         and dt_entry < rsv_departure.date()
