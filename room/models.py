@@ -16,7 +16,7 @@ class RoomStatusChoice(models.TextChoices):
 
 class Room(models.Model):
     class Meta:
-        ordering = ["id"]
+        ordering = ["number"]
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     number = models.PositiveIntegerField()

@@ -40,11 +40,16 @@ class RoomSerializer(serializers.ModelSerializer):
     def update(self, instance: Room, validated_data: dict) -> Room:
         status_data = validated_data.get("status", {})
 
-        if status_data == "Occupied":
+        guest_data = validated_data.get("guest", {})
+        dt_departure_date = validated_data.get("departure_date", {})
+        dt_quantity = validated_data.get("quantity", {})
+
+        from ipdb import set_trace
+
+        if guest_data and dt_departure_date and dt_quantity:
             room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
             room = Room.objects.filter(id=room_id_parameter).first()
             rooms_free = Room.objects.filter(hotel=room.hotel, status="Free")
-            guest_data = validated_data.get("guest", {})
             occupied_rooms = Room.objects.filter(hotel=room.hotel, status="Occupied")
 
             if len(rooms_free) == 0 and not guest_data:
@@ -52,9 +57,12 @@ class RoomSerializer(serializers.ModelSerializer):
                     {"message": "There's no available rooms"}
                 )
 
-            dt_departure_date = validated_data.get("departure_date", {})
+            if room.guest and room.guest != guest_data:
+                raise serializers.ValidationError(
+                    {"message": "Cannot change the guest"}
+                )
+
             all_reservations = Reservation.objects.filter(hotel=room.hotel)
-            dt_departure_date = dt_departure_date.date()
 
             if all_reservations:
                 rsv_count_match_primary = 0
@@ -65,7 +73,7 @@ class RoomSerializer(serializers.ModelSerializer):
                 for rsv in all_reservations:
                     rsv_entry_date = rsv.entry_date.date()
 
-                    if dt_departure_date > rsv_entry_date:
+                    if dt_departure_date.date() > rsv_entry_date:
                         rsv_count_match_primary += 1
 
                 reservations_guest = Reservation.objects.filter(guest=guest_data)
@@ -80,11 +88,11 @@ class RoomSerializer(serializers.ModelSerializer):
                             rsv_list_guest.append(rsv_guest)
 
                             if dt_departure_date:
-                                if rsv_dpt_date < dt_departure_date:
+                                if rsv_dpt_date < dt_departure_date.date():
                                     for rsv in all_reservations:
                                         rsv_entry_date = rsv.entry_date.date()
 
-                                        if dt_departure_date > rsv_entry_date:
+                                        if dt_departure_date.date() > rsv_entry_date:
                                             if rsv_guest != rsv:
                                                 rsv_count_match += 1
 
@@ -118,30 +126,35 @@ class RoomSerializer(serializers.ModelSerializer):
                 if len(rsv_list_guest) > 0:
                     rsv_list_guest[0].delete()
 
-            from ipdb import set_trace
-            
-            if guest_data and dt_departure_date:
+            if instance.entry_date is None:
                 instance.entry_date = timezone.now()
 
-                time_difference = dt_departure_date - instance.entry_date.date()
+            time_difference = dt_departure_date - instance.entry_date
 
-                difference_in_seconds = Decimal(time_difference.total_seconds())
-
-                days_total = difference_in_seconds / 60 / 60 / 24
-
-                if days_total > time_difference.days:
-                    
-                    instance.total_value = ceil(days_total) * instance.daily_rate
-                instance.guest = guest_data
-
-            else:
+            if time_difference.days < 0:
                 raise serializers.ValidationError(
-                    {
-                        "errors": [
-                            "Guest can only be passed along with the departure_date."
-                        ]
-                    }
+                    {"errors": ["Departure date smaller than entry date"]}
                 )
+
+            difference_in_seconds = Decimal(time_difference.total_seconds())
+
+            days_total = difference_in_seconds / 60 / 60 / 24
+
+            if days_total > time_difference.days:
+                instance.total_value = ceil(days_total) * instance.daily_rate
+
+            instance.guest = guest_data
+            instance.status = "Occupied"
+
+        elif guest_data and dt_departure_date and not dt_quantity:
+            raise serializers.ValidationError(
+                {"errors": ["'Quantity' field is mandatory at check in"]}
+            )
+
+        elif guest_data and not dt_departure_date:
+            raise serializers.ValidationError(
+                {"errors": ["Guest can only be passed along with the departure_date."]}
+            )
 
         elif status_data == "Free":
             instance.entry_date = None
@@ -150,7 +163,7 @@ class RoomSerializer(serializers.ModelSerializer):
             instance.total_value = "0.00"
 
         for key, value in validated_data.items():
-            if key != "guest":
+            if key != "guest" and key != "quantity":
                 setattr(instance, key, value)
 
         instance.save()

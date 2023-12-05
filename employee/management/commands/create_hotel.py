@@ -5,7 +5,7 @@ from hotel.models import Hotel
 from cloudinary import CloudinaryImage
 
 
-url_da_imagem = "http://res.cloudinary.com/dl6chlmjd/image/upload/v1700576381/knpzctx5jnbzum0wds7t.pn"
+url_da_imagem = "http://res.cloudinary.com/dl6chlmjd/image/upload/v1701453147/kg9pnwngvisshhsjgojw.webp"
 
 cloudinary_image = CloudinaryImage(url_da_imagem)
 
