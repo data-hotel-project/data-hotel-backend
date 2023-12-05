@@ -5,8 +5,6 @@ def loopingRooms(rooms, dt_entry_date, hotel_id_parameter=None):
     counter = 0
     all_reservations = Reservation.objects.filter(hotel=hotel_id_parameter)
 
-    # from ipdb import set_trace
-
     rsv_list = []
     rsvs_used = []
     for room in rooms:
@@ -17,44 +15,45 @@ def loopingRooms(rooms, dt_entry_date, hotel_id_parameter=None):
             counter += 1
 
         else:
-            for rsv in all_reservations:
-                rsv_entry_date = rsv.entry_date.replace(tzinfo=None)
+            if all_reservations:
+                for rsv in all_reservations:
+                    rsv_entry_date = rsv.entry_date.replace(tzinfo=None)
 
-                if (
-                    room_entry_date.date() < rsv_entry_date.date()
-                    and room_departure_date.date() <= rsv_entry_date.date()
-                ):
-                    rsv_list.append(rsv)
+                    if (
+                        room_entry_date.date() < rsv_entry_date.date()
+                        and room_departure_date.date() <= rsv_entry_date.date()
+                    ):
+                        rsv_list.append(rsv)
 
-            if rsv_list:
-                sorted_rsv_list = sorted(rsv_list, key=lambda x: x.entry_date)
+                if rsv_list:
+                    sorted_rsv_list = sorted(rsv_list, key=lambda x: x.entry_date)
 
-                if rsvs_used:
-                    rsv_exist = 0
-                    for sorted_rsv in sorted_rsv_list:
-                        rsv_found = []
-                        for rsv in rsvs_used:
-                            if sorted_rsv == rsv:
-                                rsv_exist += 1
-                                rsv_found.clear()
+                    if rsvs_used:
+                        rsv_exist = 0
+                        for sorted_rsv in sorted_rsv_list:
+                            rsv_found = []
+                            for rsv in rsvs_used:
+                                if sorted_rsv == rsv:
+                                    rsv_exist += 1
+                                    rsv_found.clear()
+                                    break
+
+                                if not rsv_found:
+                                    rsv_found.append(sorted_rsv)
+
+                            if rsv_found:
                                 break
 
-                            if not rsv_found:
-                                rsv_found.append(sorted_rsv)
+                        if len(sorted_rsv_list) > rsv_exist:
+                            rsvs_used.append(rsv_found[0])
+                            counter += 1
 
-                        if rsv_found:
-                            break
-
-                    if len(sorted_rsv_list) > rsv_exist:
-                        rsvs_used.append(rsv_found[0])
+                    else:
+                        rsvs_used.append(sorted_rsv_list[0])
                         counter += 1
+                        rsv_list.clear()
 
-                else:
-                    rsvs_used.append(sorted_rsv_list[0])
-                    counter += 1
-                    rsv_list.clear()
-
-                sorted_rsv_list.clear()
+                    sorted_rsv_list.clear()
 
     return counter
 
