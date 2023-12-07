@@ -45,6 +45,8 @@ def loopingRooms(rooms, dt_entry_date, dt_quantity=None, hotel_id_parameter=None
                             if rsv_found:
                                 break
 
+                        rsv_list.clear()
+
                         if len(sorted_rsv_list) > rsv_exist:
                             rsvs_used.append(rsv_found[0])
                             counter += 1

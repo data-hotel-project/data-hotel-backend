@@ -51,6 +51,12 @@ class RoomSerializer(serializers.ModelSerializer):
             room = Room.objects.filter(id=room_id_parameter).first()
             rooms_free = Room.objects.filter(hotel=room.hotel, status="Free")
             occupied_rooms = Room.objects.filter(hotel=room.hotel, status="Occupied")
+            room_quantity_matching_condition = 0
+
+            if rooms_free:
+                room_quantity_matching_condition = sum(
+                    room.quantity >= dt_quantity for room in rooms_free
+                )
 
             if len(rooms_free) == 0 and not guest_data:
                 raise serializers.ValidationError(
@@ -70,11 +76,66 @@ class RoomSerializer(serializers.ModelSerializer):
                 rsv_count_match = 0
                 room_list = 0
 
-                for rsv in all_reservations:
-                    rsv_entry_date = rsv.entry_date.date()
+                rsv_list_verify = []
+                rsvs_used_verify = []
+                counter = 0
 
-                    if dt_departure_date.date() > rsv_entry_date:
-                        rsv_count_match_primary += 1
+                for room in occupied_rooms:
+                    room_entry_date = room.entry_date.replace(tzinfo=None)
+                    room_departure_date = room.departure_date.replace(tzinfo=None)
+
+                    for rsv in all_reservations:
+                        rsv_entry_date = rsv.entry_date.date()
+
+                        if dt_departure_date.date() > rsv_entry_date:
+                            rsv_count_match_primary += 1
+
+                        if (
+                            room_entry_date.date() < rsv_entry_date
+                            and room_departure_date.date() <= rsv_entry_date
+                            and room.quantity >= rsv.quantity
+                        ):
+                            rsv_list_verify.append(rsv)
+
+                    if rsv_list_verify:
+                        sorted_rsv_list_verify = sorted(
+                            rsv_list_verify, key=lambda x: x.entry_date
+                        )
+
+                        if rsvs_used_verify:
+                            rsv_exist = 0
+                            for sorted_rsv in sorted_rsv_list_verify:
+                                rsv_found = []
+                                for rsv in rsvs_used_verify:
+                                    if sorted_rsv == rsv:
+                                        rsv_exist += 1
+                                        rsv_found.clear()
+                                        break
+
+                                    if not rsv_found:
+                                        rsv_found.append(sorted_rsv)
+
+                                if rsv_found:
+                                    break
+
+                            rsv_list_verify.clear()
+
+                            if len(sorted_rsv_list_verify) > rsv_exist:
+                                rsvs_used_verify.append(rsv_found[0])
+                                counter += 1
+
+                        else:
+                            rsvs_used_verify.append(sorted_rsv_list_verify[0])
+                            counter += 1
+                            rsv_list_verify.clear()
+
+                        sorted_rsv_list_verify.clear()
+
+                rsv_count_match_primary = int(
+                    rsv_count_match_primary / len(occupied_rooms)
+                )
+
+                rsv_count_match_primary -= counter
 
                 reservations_guest = Reservation.objects.filter(guest=guest_data)
 
@@ -87,36 +148,32 @@ class RoomSerializer(serializers.ModelSerializer):
                         if rsv_guest_entry_date == current_date.date():
                             rsv_list_guest.append(rsv_guest)
 
-                            if dt_departure_date:
-                                if rsv_dpt_date < dt_departure_date.date():
-                                    for rsv in all_reservations:
-                                        rsv_entry_date = rsv.entry_date.date()
+                            if rsv_dpt_date < dt_departure_date.date():
+                                for rsv in all_reservations:
+                                    rsv_entry_date = rsv.entry_date.date()
 
-                                        if dt_departure_date.date() > rsv_entry_date:
-                                            if rsv_guest != rsv:
-                                                rsv_count_match += 1
+                                    if dt_departure_date.date() > rsv_entry_date:
+                                        if rsv_guest != rsv:
+                                            rsv_count_match += 1
 
-                                    for room in occupied_rooms:
-                                        room_departure_date = (
-                                            room.departure_date.replace(tzinfo=None)
-                                        )
-
-                                        if (
-                                            rsv_guest_entry_date
-                                            <= room_departure_date.date()
-                                        ):
-                                            room_list += 1
+                                for room in occupied_rooms:
+                                    room_departure_date = room.departure_date.replace(
+                                        tzinfo=None
+                                    )
 
                                     if (
-                                        len(rooms_free) + room_list - rsv_count_match
-                                        <= 0
+                                        rsv_guest_entry_date
+                                        <= room_departure_date.date()
                                     ):
-                                        raise serializers.ValidationError(
-                                            {"message": "There's no available rooms."}
-                                        )
+                                        room_list += 1
+
+                                if len(rooms_free) + room_list - rsv_count_match <= 0:
+                                    raise serializers.ValidationError(
+                                        {"message": "There's no available rooms."}
+                                    )
 
                 if (
-                    len(rooms_free) <= rsv_count_match_primary
+                    room_quantity_matching_condition <= rsv_count_match_primary
                     and len(rsv_list_guest) == 0
                 ):
                     raise serializers.ValidationError(
@@ -166,7 +223,7 @@ class RoomSerializer(serializers.ModelSerializer):
             if key != "guest" and key != "quantity":
                 setattr(instance, key, value)
 
-        instance.save()
+        # instance.save()
         return instance
 
     class Meta:

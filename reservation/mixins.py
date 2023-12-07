@@ -25,8 +25,6 @@ class ReservationMixin:
             self.request.data["departure_date"]
         ).date()
 
-        from ipdb import set_trace
-
         if rooms_free:
             room_quantity_matching_condition = sum(
                 room.quantity >= dt_quantity for room in rooms_free
@@ -57,6 +55,7 @@ class ReservationMixin:
 
         elif room_quantity_matching_condition > 0:
             return super().create(request, *args, **kwargs)
+
         else:
             room_count = loopingRooms(occupied_rooms, dt_entry_date, dt_quantity)
 
