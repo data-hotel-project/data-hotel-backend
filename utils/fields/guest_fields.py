@@ -7,7 +7,7 @@ class GuestFields:
         "birthdate",
         "nationality",
         "contact",
-        "contact_aditional",
+        "aditional_contact",
         "emergency_num",
         "is_staff",
         "is_superuser",
