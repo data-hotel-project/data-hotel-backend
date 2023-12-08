@@ -7,7 +7,7 @@ class CustomUserFields:
         "birthdate",
         "nationality",
         "contact",
-        "contact_aditional",
+        "aditional_contact",
         "emergency_num",
         "job_function",
         "admission_date",
