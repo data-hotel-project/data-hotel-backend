@@ -131,9 +131,10 @@ class RoomSerializer(serializers.ModelSerializer):
 
                         sorted_rsv_list_verify.clear()
 
-                rsv_count_match_primary = int(
-                    rsv_count_match_primary / len(occupied_rooms)
-                )
+                if len(occupied_rooms) != 0:
+                    rsv_count_match_primary = int(
+                        rsv_count_match_primary / len(occupied_rooms)
+                    )
 
                 rsv_count_match_primary -= counter
 
@@ -223,7 +224,7 @@ class RoomSerializer(serializers.ModelSerializer):
             if key != "guest" and key != "quantity":
                 setattr(instance, key, value)
 
-        # instance.save()
+        instance.save()
         return instance
 
     class Meta:
