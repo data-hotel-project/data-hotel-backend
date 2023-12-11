@@ -1,74 +1,84 @@
+from datetime import datetime
 from reservation.models import Reservation
 
+from ipdb import set_trace
 
-def loopingRooms(rooms, dt_entry_date, dt_quantity=None, hotel_id_parameter=None):
-    counter = 0
+
+def loopingRooms(
+    rooms, data=None, dt_entry_date=None, dt_quantity=None, hotel_id_parameter=None
+):
+    if not dt_entry_date and data:
+        dt_entry_date = datetime.fromisoformat(data["entry_date"]).date()
+
+    if not dt_quantity and data:
+        dt_quantity = data["quantity"]
+
+    dt_departure_date = datetime.fromisoformat(data["departure_date"]).date()
+
     all_reservations = Reservation.objects.filter(hotel=hotel_id_parameter)
+
+    counter = 0
+    rsv_count_match = 0
+    rsv_list_match = []
 
     rsv_list = []
     rsvs_used = []
-    for room in rooms:
-        room_entry_date = room.entry_date.replace(tzinfo=None)
-        room_departure_date = room.departure_date.replace(tzinfo=None)
 
-        if dt_entry_date >= room_departure_date.date() and dt_quantity <= room.quantity:
+    for room in rooms:
+        room_entry_date = room.entry_date.replace(tzinfo=None).date()
+        room_departure_date = room.departure_date.replace(tzinfo=None).date()
+
+        if dt_entry_date >= room_departure_date and dt_quantity <= room.quantity:
             counter += 1
 
-        else:
-            if all_reservations:
-                for rsv in all_reservations:
-                    rsv_entry_date = rsv.entry_date.replace(tzinfo=None)
+        elif all_reservations:
+            rsv_list_match = [
+                rsv
+                for rsv in all_reservations
+                if checkReservationPeriod(
+                    dt_entry_date,
+                    dt_departure_date,
+                    rsv.entry_date.replace(tzinfo=None),
+                    rsv.departure_date.replace(tzinfo=None),
+                )
+            ]
 
-                    if (
-                        room_entry_date.date() < rsv_entry_date.date()
-                        and room_departure_date.date() <= rsv_entry_date.date()
-                        and room.quantity >= rsv.quantity
-                    ):
-                        rsv_list.append(rsv)
+            rsv_list = [
+                rsv
+                for rsv in rsv_list_match
+                if (
+                    room_entry_date < rsv.entry_date.replace(tzinfo=None).date()
+                    and room_departure_date
+                    <= rsv.entry_date.replace(tzinfo=None).date()
+                    and room.quantity >= rsv.quantity
+                )
+            ]
 
-                if rsv_list:
-                    sorted_rsv_list = sorted(rsv_list, key=lambda x: x.entry_date)
+            rsv_count_match = len(rsv_list_match)
 
-                    if rsvs_used:
-                        rsv_exist = 0
-                        for sorted_rsv in sorted_rsv_list:
-                            rsv_found = []
-                            for rsv in rsvs_used:
-                                if sorted_rsv == rsv:
-                                    rsv_exist += 1
-                                    rsv_found.clear()
-                                    break
+            if rsv_list:
+                latest_unused_rsv = next(
+                    (
+                        rsv
+                        for rsv in sorted(rsv_list, key=lambda x: x.entry_date)
+                        if rsv not in rsvs_used
+                    ),
+                    None,
+                )
 
-                                if not rsv_found:
-                                    rsv_found.append(sorted_rsv)
+                if latest_unused_rsv:
+                    rsvs_used.append(latest_unused_rsv)
+                    counter += 1
 
-                            if rsv_found:
-                                break
+    # print("AAAAAAAA", counter)
+    # print("BBBBBBBBBBBBB", rsv_count_match)
 
-                        rsv_list.clear()
-
-                        if len(sorted_rsv_list) > rsv_exist:
-                            rsvs_used.append(rsv_found[0])
-                            counter += 1
-
-                    else:
-                        rsvs_used.append(sorted_rsv_list[0])
-                        counter += 1
-                        rsv_list.clear()
-
-                    sorted_rsv_list.clear()
-
-    return counter
+    return counter, rsv_count_match
 
 
 def checkReservationPeriod(dt_entry, dt_departure, rsv_entry, rsv_departure):
-    boolean = False
-
-    if (
+    return (
         dt_entry >= rsv_entry.date()
         and dt_entry < rsv_departure.date()
         or (dt_entry <= rsv_entry.date() and dt_departure > rsv_entry.date())
-    ):
-        boolean = True
-
-    return boolean
+    )

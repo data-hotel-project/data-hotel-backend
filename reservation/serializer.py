@@ -82,7 +82,7 @@ class ReservationSerializer(serializers.ModelSerializer):
                     )
 
             else:
-                room_count = loopingRooms(occupied_rooms, dt_entry_date)
+                room_count = loopingRooms(occupied_rooms, dt_entry_date=dt_entry_date)
 
                 if room_count == 0 and len(rooms_free) == 0:
                     raise serializers.ValidationError(
