@@ -2,6 +2,7 @@ from datetime import datetime
 from reservation.models import Reservation
 
 from ipdb import set_trace
+from copy import deepcopy
 
 
 def loopingRooms(
@@ -26,11 +27,11 @@ def loopingRooms(
     rsv_count_match = 0
     rsv_list_match = []
 
-    rsv_list_free = []
-    rsv_used_free = []
-
     rsv_list = []
     rsvs_used = []
+
+    rsv_list_free = []
+    free_unused_rooms = []
 
     for room in occupied_rooms:
         room_entry_date = room.entry_date.replace(tzinfo=None).date()
@@ -39,7 +40,7 @@ def loopingRooms(
         if dt_entry_date >= room_departure_date and dt_quantity <= room.quantity:
             counter += 1
 
-        else:
+        elif all_reservations:
             rsv_list_match = [
                 rsv
                 for rsv in all_reservations
@@ -51,6 +52,8 @@ def loopingRooms(
                 )
             ]
 
+            rsv_count_match = len(rsv_list_match)
+
             for rsv in rsv_list_match:
                 if (
                     room_entry_date < rsv.entry_date.replace(tzinfo=None).date()
@@ -59,22 +62,8 @@ def loopingRooms(
                     and room.quantity >= rsv.quantity
                 ):
                     rsv_list.append(rsv)
-                else:
-                    if rsv not in rsv_list_free:
-                        rsv_list_free.append(rsv)
-
-            # rsv_list = [
-            #     rsv
-            #     for rsv in rsv_list_match
-            #     if (
-            #         room_entry_date < rsv.entry_date.replace(tzinfo=None).date()
-            #         and room_departure_date
-            #         <= rsv.entry_date.replace(tzinfo=None).date()
-            #         and room.quantity >= rsv.quantity
-            #     )
-            # ]
-
-            rsv_count_match = len(rsv_list_match)
+                elif rsv not in rsv_list_free:
+                    rsv_list_free.append(rsv)
 
             if rsv_list:
                 latest_unused_rsv = next(
@@ -93,10 +82,63 @@ def loopingRooms(
                     counter += 1
 
     if free_rooms:
-        for room in free_rooms:
-            set_trace()
+        room_quantity_matching_condition = sum(
+            room.quantity >= dt_quantity for room in free_rooms
+        )
 
-    return counter, rsv_count_match
+        if room_quantity_matching_condition > 0 and all_reservations:
+            sorted_free_rooms = sorted(free_rooms, key=lambda x: x.quantity)
+            verified_rsv_ids = set()
+
+            free_unused_rooms = deepcopy(free_rooms)
+
+            if occupied_rooms:
+                for room in sorted_free_rooms:
+                    for rsv in rsv_list_free:
+                        if (
+                            rsv.quantity <= room.quantity
+                            and rsv.id not in verified_rsv_ids
+                        ):
+                            verified_rsv_ids.add(rsv.id)
+                            free_unused_rooms = free_unused_rooms.exclude(id=room.id)
+                            rsv_count_match -= 1
+                            break
+
+            else:
+                rsv_list_match = [
+                    rsv
+                    for rsv in all_reservations
+                    if checkReservationPeriod(
+                        dt_entry_date,
+                        dt_departure_date,
+                        rsv.entry_date.replace(tzinfo=None),
+                        rsv.departure_date.replace(tzinfo=None),
+                    )
+                ]
+
+                rsv_count_match = len(rsv_list_match)
+
+                for room in sorted_free_rooms:
+                    for rsv in rsv_list_match:
+                        if (
+                            rsv.quantity <= room.quantity
+                            and rsv.id not in verified_rsv_ids
+                        ):
+                            verified_rsv_ids.add(rsv.id)
+                            free_unused_rooms = free_unused_rooms.exclude(id=room.id)
+                            rsv_count_match -= 1
+                            break
+
+            free_unused_rooms = len(free_unused_rooms)
+
+    if not free_unused_rooms:
+        free_unused_rooms = room_quantity_matching_condition
+
+    print("AAAA", counter)
+    print("BBBB", rsv_count_match)
+    print("CCCC", free_unused_rooms)
+
+    return counter, rsv_count_match, free_unused_rooms
 
 
 def checkReservationPeriod(dt_entry, dt_departure, rsv_entry, rsv_departure):

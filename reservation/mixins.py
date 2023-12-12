@@ -30,7 +30,7 @@ class ReservationMixin:
             )
 
         if all_reservations:
-            room_count, rsv_count_match = loopingRooms(
+            room_count, rsv_count_match, free_unused_rooms_count = loopingRooms(
                 occupied_rooms,
                 data,
                 hotel_id_parameter=hotel_id_parameter,
@@ -39,16 +39,15 @@ class ReservationMixin:
 
             set_trace()
 
-            if room_quantity_matching_condition + room_count - rsv_count_match <= 0:
+            return Response({"message": "Hotellllll is full"}, status=400)
+            if free_unused_rooms_count + room_count - rsv_count_match <= 0:
                 return Response({"message": "Hotel is full"}, status=400)
 
             return super().create(request, *args, **kwargs)
 
-        elif room_quantity_matching_condition > 0:
-            return super().create(request, *args, **kwargs)
-
         else:
-            room_count = loopingRooms(occupied_rooms, dt_entry_date, dt_quantity)
+            room_count = loopingRooms(occupied_rooms, data, free_rooms=free_rooms)
+            return Response({"message": "Hotellllll is full"}, status=400)
 
             if room_count == 0:
                 return Response({"message": "Hotel is full"}, status=400)
