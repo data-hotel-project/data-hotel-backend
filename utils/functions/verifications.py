@@ -5,7 +5,12 @@ from ipdb import set_trace
 
 
 def loopingRooms(
-    rooms, data=None, dt_entry_date=None, dt_quantity=None, hotel_id_parameter=None
+    occupied_rooms,
+    data=None,
+    dt_entry_date=None,
+    dt_quantity=None,
+    hotel_id_parameter=None,
+    free_rooms=None,
 ):
     if not dt_entry_date and data:
         dt_entry_date = datetime.fromisoformat(data["entry_date"]).date()
@@ -21,17 +26,20 @@ def loopingRooms(
     rsv_count_match = 0
     rsv_list_match = []
 
+    rsv_list_free = []
+    rsv_used_free = []
+
     rsv_list = []
     rsvs_used = []
 
-    for room in rooms:
+    for room in occupied_rooms:
         room_entry_date = room.entry_date.replace(tzinfo=None).date()
         room_departure_date = room.departure_date.replace(tzinfo=None).date()
 
         if dt_entry_date >= room_departure_date and dt_quantity <= room.quantity:
             counter += 1
 
-        elif all_reservations:
+        else:
             rsv_list_match = [
                 rsv
                 for rsv in all_reservations
@@ -43,16 +51,28 @@ def loopingRooms(
                 )
             ]
 
-            rsv_list = [
-                rsv
-                for rsv in rsv_list_match
+            for rsv in rsv_list_match:
                 if (
                     room_entry_date < rsv.entry_date.replace(tzinfo=None).date()
                     and room_departure_date
                     <= rsv.entry_date.replace(tzinfo=None).date()
                     and room.quantity >= rsv.quantity
-                )
-            ]
+                ):
+                    rsv_list.append(rsv)
+                else:
+                    if rsv not in rsv_list_free:
+                        rsv_list_free.append(rsv)
+
+            # rsv_list = [
+            #     rsv
+            #     for rsv in rsv_list_match
+            #     if (
+            #         room_entry_date < rsv.entry_date.replace(tzinfo=None).date()
+            #         and room_departure_date
+            #         <= rsv.entry_date.replace(tzinfo=None).date()
+            #         and room.quantity >= rsv.quantity
+            #     )
+            # ]
 
             rsv_count_match = len(rsv_list_match)
 
@@ -66,12 +86,15 @@ def loopingRooms(
                     None,
                 )
 
+                rsv_list.clear()
+
                 if latest_unused_rsv:
                     rsvs_used.append(latest_unused_rsv)
                     counter += 1
 
-    # print("AAAAAAAA", counter)
-    # print("BBBBBBBBBBBBB", rsv_count_match)
+    if free_rooms:
+        for room in free_rooms:
+            set_trace()
 
     return counter, rsv_count_match
 

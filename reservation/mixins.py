@@ -16,7 +16,7 @@ class ReservationMixin:
         occupied_rooms = Room.objects.filter(
             hotel=hotel_id_parameter, status="Occupied"
         )
-        rooms_free = Room.objects.filter(hotel=hotel_id_parameter, status="Free")
+        free_rooms = Room.objects.filter(hotel=hotel_id_parameter, status="Free")
 
         room_quantity_matching_condition = 0
         room_count = 0
@@ -24,18 +24,20 @@ class ReservationMixin:
         dt_quantity = self.request.data["quantity"]
         dt_entry_date = datetime.fromisoformat(self.request.data["entry_date"]).date()
 
-        if rooms_free:
+        if free_rooms:
             room_quantity_matching_condition = sum(
-                room.quantity >= dt_quantity for room in rooms_free
+                room.quantity >= dt_quantity for room in free_rooms
             )
 
         if all_reservations:
             room_count, rsv_count_match = loopingRooms(
-                occupied_rooms, data, hotel_id_parameter=hotel_id_parameter
+                occupied_rooms,
+                data,
+                hotel_id_parameter=hotel_id_parameter,
+                free_rooms=free_rooms,
             )
 
-            # set_trace()
-            return Response({"message": "Hotellll is full"}, status=400)
+            set_trace()
 
             if room_quantity_matching_condition + room_count - rsv_count_match <= 0:
                 return Response({"message": "Hotel is full"}, status=400)
