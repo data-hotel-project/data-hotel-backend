@@ -1,11 +1,7 @@
-from datetime import datetime
-from reservation.models import Reservation
-from room.models import Room
 from rest_framework.response import Response
 
+from room.models import Room
 from utils.functions.verifications import loopingRooms
-
-from ipdb import set_trace
 
 
 class ReservationMixin:
@@ -24,9 +20,6 @@ class ReservationMixin:
             free_rooms=free_rooms,
         )
 
-        # set_trace()
-
-        # return Response({"message": "Hotellllll is full"}, status=400)
         if room_count + free_unused_rooms_qt - rsv_count_match <= 0:
             return Response({"message": "Hotel is full"}, status=400)
 

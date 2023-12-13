@@ -1,8 +1,7 @@
-from datetime import datetime
-from reservation.models import Reservation
-
-from ipdb import set_trace
 from copy import deepcopy
+from datetime import datetime
+
+from reservation.models import Reservation
 
 
 def loopingRooms(
