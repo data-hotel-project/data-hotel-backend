@@ -147,9 +147,9 @@ def loopingRooms(
     elif room_quantity_matching_condition == 0 or not all_reservations:
         free_unused_rooms_qt = room_quantity_matching_condition
 
-    print("AAAA", counter)
-    print("BBBB", rsv_count_match)
-    print("CCCC", free_unused_rooms_qt)
+    # print("AAAA", counter)
+    # print("BBBB", rsv_count_match)
+    # print("CCCC", free_unused_rooms_qt)
 
     return counter, rsv_count_match, free_unused_rooms_qt
 

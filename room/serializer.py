@@ -7,6 +7,7 @@ from rest_framework import serializers
 
 from reservation.models import Reservation
 from utils.fields.room_fields import RoomFields
+from utils.functions.verifications import checkReservationPeriod
 
 from .models import Room
 
@@ -69,16 +70,23 @@ class RoomSerializer(serializers.ModelSerializer):
 
             if all_reservations:
                 rsv_count_match_primary = 0
-                rsv_list_guest = []
-                rsv_count_match = 0
-                room_list = 0
-
-                rsv_list_verify = []
-                rsvs_used_verify = []
-
                 decrease_rsv_count_match_primary = 0
 
+                rsv_count_match = 0
+                decrease_rsv_count_match = 0
+
+                room_list = 0
+
+                rsv_list_guest = []
+                rsv_list_verify = []
+                rsvs_used_verify = []
                 rsv_list_free = []
+
+                rsv_list_conflict = []
+                rsvs_used_conflict = []
+                rsv_list_conflict_free = []
+
+                increase_availability = 0
 
                 for room in occupied_rooms:
                     room_entry_date = room.entry_date.replace(tzinfo=None)
@@ -137,17 +145,52 @@ class RoomSerializer(serializers.ModelSerializer):
                             rsv_list_guest.append(rsv_guest)
 
                             if rsv_dpt_date < dt_departure_date.date():
-                                for rsv in all_reservations:
-                                    rsv_entry_date = rsv.entry_date.date()
-
-                                    if dt_departure_date.date() > rsv_entry_date:
-                                        if rsv_guest != rsv:
-                                            rsv_count_match += 1
-
                                 for room in occupied_rooms:
+                                    room_entry_date = room.entry_date.replace(
+                                        tzinfo=None
+                                    )
+
                                     room_departure_date = room.departure_date.replace(
                                         tzinfo=None
                                     )
+
+                                    for rsv in all_reservations:
+                                        rsv_entry_date = rsv.entry_date.date()
+
+                                        if dt_departure_date.date() > rsv_entry_date:
+                                            if rsv not in rsv_list_conflict_free:
+                                                rsv_list_conflict_free.append(rsv)
+
+                                            if rsv_guest != rsv:
+                                                rsv_count_match += 1
+
+                                        if (
+                                            room_entry_date.date() < rsv_entry_date
+                                            and room_departure_date.date()
+                                            <= rsv_entry_date
+                                            and room.quantity >= rsv.quantity
+                                        ):
+                                            rsv_list_conflict.append(rsv)
+
+                                    if rsv_list_conflict:
+                                        latest_unused_rsv = next(
+                                            (
+                                                rsv
+                                                for rsv in sorted(
+                                                    rsv_list_conflict,
+                                                    key=lambda x: x.entry_date,
+                                                )
+                                                if rsv not in rsvs_used_conflict
+                                                and rsv in rsv_list_conflict_free
+                                            ),
+                                            None,
+                                        )
+
+                                        rsv_list_conflict.clear()
+
+                                        if latest_unused_rsv:
+                                            rsvs_used_conflict.append(latest_unused_rsv)
+                                            decrease_rsv_count_match += 1
 
                                     if (
                                         rsv_guest_entry_date
@@ -155,10 +198,12 @@ class RoomSerializer(serializers.ModelSerializer):
                                     ):
                                         room_list += 1
 
-                                if len(free_rooms) + room_list - rsv_count_match <= 0:
-                                    raise serializers.ValidationError(
-                                        {"message": "There's no available rooms."}
+                                if len(occupied_rooms) != 0:
+                                    rsv_count_match = int(
+                                        rsv_count_match / len(occupied_rooms)
                                     )
+
+                                rsv_count_match -= decrease_rsv_count_match
 
                 room_matching_condition = [
                     room for room in free_rooms if room.quantity >= dt_quantity
@@ -172,22 +217,62 @@ class RoomSerializer(serializers.ModelSerializer):
 
                     free_unused_rooms = deepcopy(free_rooms)
 
-                    for room in sorted_free_rooms:
-                        for rsv in rsv_list_free:
-                            if (
-                                rsv.quantity <= room.quantity
-                                and rsv.id not in verified_rsv_ids
-                                and rsv not in rsvs_used_verify
-                            ):
-                                verified_rsv_ids.add(rsv.id)
-                                free_unused_rooms = free_unused_rooms.exclude(
-                                    id=room.id
-                                )
-                                break
+                    if reservations_guest:
+                        for room in sorted_free_rooms:
+                            for rsv in rsv_list_conflict_free:
+                                if rsv in rsv_list_guest:
+                                    increase_availability = sum(
+                                        rsv_internal.id not in verified_rsv_ids
+                                        and rsv_internal not in rsvs_used_conflict
+                                        and rsv != rsv_internal
+                                        and not checkReservationPeriod(
+                                            rsv.entry_date.date(),
+                                            rsv.departure_date.date(),
+                                            rsv_internal.entry_date.replace(
+                                                tzinfo=None
+                                            ),
+                                            rsv_internal.departure_date.replace(
+                                                tzinfo=None
+                                            ),
+                                        )
+                                        for rsv_internal in rsv_list_conflict_free
+                                    )
+
+                                if (
+                                    rsv.quantity <= room.quantity
+                                    and rsv.id not in verified_rsv_ids
+                                    and rsv not in rsvs_used_conflict
+                                    and rsv not in rsv_list_guest
+                                ):
+                                    verified_rsv_ids.add(rsv.id)
+                                    free_unused_rooms = free_unused_rooms.exclude(
+                                        id=room.id
+                                    )
+                                    break
+                    else:
+                        for room in sorted_free_rooms:
+                            for rsv in rsv_list_free:
+                                if (
+                                    rsv.quantity <= room.quantity
+                                    and rsv.id not in verified_rsv_ids
+                                    and rsv not in rsvs_used_verify
+                                ):
+                                    verified_rsv_ids.add(rsv.id)
+                                    free_unused_rooms = free_unused_rooms.exclude(
+                                        id=room.id
+                                    )
+                                    break
+
+                        rsv_list_conflict_free = sorted(
+                            rsv_list_conflict_free, key=lambda x: x.created_at
+                        )
 
                     free_enused_verify = any(
                         r.id == current_room.id for r in free_unused_rooms
                     )
+
+                    if not free_unused_rooms and increase_availability > 0:
+                        free_enused_verify = True
 
                 # print("AAAA", room_matching_condition)
                 # print("BBBB", rsv_count_match_primary)

@@ -39,6 +39,9 @@ class Room(models.Model):
     image4 = CloudinaryField("image", null=True)
     image5 = CloudinaryField("image", null=True)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
 
     guest = models.ForeignKey(

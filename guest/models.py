@@ -5,9 +5,9 @@ from customUser.models import CustomUser
 
 
 class Guest(CustomUser):
+    class Meta:
+        ordering = ["created_at"]
+
     address = models.ForeignKey(
         Address, on_delete=models.DO_NOTHING, null=True, blank=True
     )
-
-    class Meta:
-        ordering = ["id"]

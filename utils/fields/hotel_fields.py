@@ -15,8 +15,14 @@ class HotelFields:
         "full_url4",
         "full_url5",
         "address",
+        "created_at",
+        "updated_at",
     ]
-    read_only_fields = ["id"]
+    read_only_fields = [
+        "id",
+        "created_at",
+        "updated_at",
+    ]
     extra_kwargs = {
         "image": {"write_only": True},
         "image2": {"write_only": True},
