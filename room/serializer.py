@@ -88,6 +88,60 @@ class RoomSerializer(serializers.ModelSerializer):
                 if latest_unused_rsv:
                     rsvs_used_occupied.append(latest_unused_rsv)
 
+    @staticmethod
+    def process_reservations_with_guest(
+        increase_availability,
+        rsv_list_guest,
+        all_reservations,
+        verified_rsv_ids,
+        rsvs_used_occupied,
+        rsv,
+        room,
+        free_unused_rooms,
+        dt_departure_date,
+    ):
+        if rsv in rsv_list_guest:
+            increase_availability = sum(
+                rsv_internal.id not in verified_rsv_ids
+                and rsv_internal not in rsvs_used_occupied
+                and rsv != rsv_internal
+                and not checkReservationPeriod(
+                    rsv.entry_date.date(),
+                    dt_departure_date.date(),
+                    rsv_internal.entry_date.replace(tzinfo=None),
+                    rsv_internal.departure_date.replace(tzinfo=None),
+                )
+                for rsv_internal in all_reservations
+            )
+
+        if (
+            rsv.quantity <= room.quantity
+            and rsv.id not in verified_rsv_ids
+            and rsv not in rsvs_used_occupied
+            and rsv not in rsv_list_guest
+        ):
+            verified_rsv_ids.add(rsv.id)
+            free_unused_rooms = free_unused_rooms.exclude(id=room.id)
+
+            return True, increase_availability
+
+        return False, increase_availability
+
+    @staticmethod
+    def process_reservations_without_guest(
+        rsv, room, verified_rsv_ids, rsvs_used_occupied, free_unused_rooms
+    ):
+        if (
+            rsv.quantity <= room.quantity
+            and rsv.id not in verified_rsv_ids
+            and rsv not in rsvs_used_occupied
+        ):
+            verified_rsv_ids.add(rsv.id)
+            free_unused_rooms = free_unused_rooms.exclude(id=room.id)
+            return True
+
+        return False
+
     def update(self, instance: Room, validated_data: dict) -> Room:
         status_data = validated_data.get("status", {})
         guest_data = validated_data.get("guest", {})
@@ -167,56 +221,35 @@ class RoomSerializer(serializers.ModelSerializer):
 
                     free_unused_rooms = deepcopy(free_rooms)
 
-                    if reservations_guest:
-                        for room in sorted_free_rooms:
-                            for rsv in rsv_list_conflict_free:
-                                if rsv in rsv_list_guest:
-                                    increase_availability = sum(
-                                        rsv_internal.id not in verified_rsv_ids
-                                        and rsv_internal not in rsvs_used_occupied
-                                        and rsv != rsv_internal
-                                        and not checkReservationPeriod(
-                                            rsv.entry_date.date(),
-                                            rsv.departure_date.date(),
-                                            rsv_internal.entry_date.replace(
-                                                tzinfo=None
-                                            ),
-                                            rsv_internal.departure_date.replace(
-                                                tzinfo=None
-                                            ),
-                                        )
-                                        for rsv_internal in rsv_list_conflict_free
-                                    )
-
-                                if (
-                                    rsv.quantity <= room.quantity
-                                    and rsv.id not in verified_rsv_ids
-                                    and rsv not in rsvs_used_occupied
-                                    and rsv not in rsv_list_guest
-                                ):
-                                    verified_rsv_ids.add(rsv.id)
-                                    free_unused_rooms = free_unused_rooms.exclude(
-                                        id=room.id
-                                    )
+                    for room in sorted_free_rooms:
+                        for rsv in rsv_list_conflict_free:
+                            if reservations_guest:
+                                (
+                                    success,
+                                    increase_availability,
+                                ) = self.process_reservations_with_guest(
+                                    increase_availability=increase_availability,
+                                    rsv_list_guest=rsv_list_guest,
+                                    all_reservations=all_reservations,
+                                    verified_rsv_ids=verified_rsv_ids,
+                                    rsvs_used_occupied=rsvs_used_occupied,
+                                    rsv=rsv,
+                                    room=room,
+                                    free_unused_rooms=free_unused_rooms,
+                                    dt_departure_date=dt_departure_date,
+                                )
+                                if success:
                                     break
 
-                    else:
-                        for room in sorted_free_rooms:
-                            for rsv in rsv_list_conflict_free:
-                                if (
-                                    rsv.quantity <= room.quantity
-                                    and rsv.id not in verified_rsv_ids
-                                    and rsv not in rsvs_used_occupied
+                            else:
+                                if self.process_reservations_without_guest(
+                                    rsv=rsv,
+                                    room=room,
+                                    verified_rsv_ids=verified_rsv_ids,
+                                    rsvs_used_occupied=rsvs_used_occupied,
+                                    free_unused_rooms=free_unused_rooms,
                                 ):
-                                    verified_rsv_ids.add(rsv.id)
-                                    free_unused_rooms = free_unused_rooms.exclude(
-                                        id=room.id
-                                    )
                                     break
-
-                        rsv_list_conflict_free = sorted(
-                            rsv_list_conflict_free, key=lambda x: x.created_at
-                        )
 
                     free_enused_verify = any(
                         r.id == current_room.id for r in free_unused_rooms
@@ -225,16 +258,16 @@ class RoomSerializer(serializers.ModelSerializer):
                     if not free_unused_rooms and increase_availability > 0:
                         free_enused_verify = True
 
-                print("AAA", rsv_list_conflict_free)
-                print("BBB", rsv_list_conflict_occupied)
-                print("CCC", rsvs_used_occupied)
-                print("DDD", free_enused_verify)
+                # print("AAA", rsv_list_conflict_free)
+                # print("BBB", rsv_list_conflict_occupied)
+                # print("CCC", rsvs_used_occupied)
+                # print("DDD", free_enused_verify)
                 print("EEE", increase_availability)
 
                 raise serializers.ValidationError(
-                    {"message": "There's no available rooms."}
+                    {"message": "There'ssssssssssssssssss no available rooms."}
                 )
-                if not free_enused_verify and len(rsv_list_guest) == 0:
+                if not free_enused_verify:
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
                     )
