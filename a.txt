@@ -1,0 +1,34 @@
+for room in occupied_rooms:
+    room_entry_date = room.entry_date.replace(tzinfo=None)
+    room_departure_date = room.departure_date.replace(tzinfo=None)
+
+    for rsv in all_reservations:
+        rsv_entry_date = rsv.entry_date.date()
+
+        if dt_departure_date.date() > rsv_entry_date:
+            if rsv not in rsv_list_free:
+                rsv_list_free.append(rsv)
+
+        if (
+            room_entry_date.date() < rsv_entry_date
+            and room_departure_date.date() <= rsv_entry_date
+            and room.quantity >= rsv.quantity
+        ):
+            rsv_list_verify.append(rsv)
+
+    if rsv_list_verify:
+        latest_unused_rsv = next(
+            (
+                rsv
+                for rsv in sorted(
+                    rsv_list_verify, key=lambda x: x.entry_date
+                )
+                if rsv not in rsvs_used_verify and rsv in rsv_list_free
+            ),
+            None,
+        )
+
+        rsv_list_verify.clear()
+
+        if latest_unused_rsv:
+            rsvs_used_verify.append(latest_unused_rsv)

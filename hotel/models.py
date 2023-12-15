@@ -5,7 +5,7 @@ from cloudinary.models import CloudinaryField
 
 class Hotel(models.Model):
     class Meta:
-        ordering = ["id"]
+        ordering = ["created_at"]
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name = models.CharField(max_length=50, unique=True)
@@ -16,5 +16,8 @@ class Hotel(models.Model):
     image3 = CloudinaryField("image", null=True)
     image4 = CloudinaryField("image", null=True)
     image5 = CloudinaryField("image", null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     address = models.OneToOneField("address.Address", on_delete=models.DO_NOTHING)

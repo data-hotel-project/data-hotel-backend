@@ -7,6 +7,7 @@ from utils.fields.customUser_fields import CustomUserFields
 
 class CustomUserSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
+
     class Meta:
         model = Employee
         fields = CustomUserFields.fields

@@ -22,4 +22,4 @@ class Employee(CustomUser):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="employees")
 
     class Meta:
-        ordering = ["id"]
+        ordering = ["created_at"]

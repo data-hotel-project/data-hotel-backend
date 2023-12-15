@@ -1,16 +1,12 @@
 from rest_framework import serializers
 
 from room.models import Room
+from utils.fields.reservation_fields import ReservationFields
 from utils.functions.verifications import checkReservationPeriod, loopingRooms
 from .models import Reservation
 
 
 class ReservationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reservation
-        fields = "__all__"
-        read_only_fields = ["guest"]
-
     def update(self, instance, validated_data):
         dt_entry_date = validated_data.get("entry_date", {})
         dt_departure_date = validated_data.get("departure_date", {})
@@ -95,3 +91,8 @@ class ReservationSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+    class Meta:
+        model = Reservation
+        fields = ReservationFields.fields
+        read_only_fields = ReservationFields.read_only_fields
