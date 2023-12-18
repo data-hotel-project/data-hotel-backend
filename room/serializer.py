@@ -1,4 +1,3 @@
-from copy import deepcopy
 from decimal import Decimal
 from math import ceil
 from django.shortcuts import get_object_or_404
@@ -11,8 +10,6 @@ from utils.fields.room_fields import RoomFields
 from utils.functions.verifications import checkReservationPeriod
 
 from .models import Room
-
-from ipdb import set_trace
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -94,10 +91,10 @@ class RoomSerializer(serializers.ModelSerializer):
         rsv_list_guest,
         all_reservations,
         verified_rsv_ids,
+        exclude_ids,
         rsvs_used_occupied,
         rsv,
         room,
-        free_unused_rooms,
         dt_departure_date,
     ):
         if rsv in rsv_list_guest:
@@ -121,7 +118,7 @@ class RoomSerializer(serializers.ModelSerializer):
             and rsv not in rsv_list_guest
         ):
             verified_rsv_ids.add(rsv.id)
-            free_unused_rooms = free_unused_rooms.exclude(id=room.id)
+            exclude_ids.add(room.id)
 
             return True, increase_availability
 
@@ -129,7 +126,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def process_reservations_without_guest(
-        rsv, room, verified_rsv_ids, rsvs_used_occupied, free_unused_rooms
+        rsv, room, verified_rsv_ids, exclude_ids, rsvs_used_occupied, free_unused_rooms
     ):
         if (
             rsv.quantity <= room.quantity
@@ -137,7 +134,8 @@ class RoomSerializer(serializers.ModelSerializer):
             and rsv not in rsvs_used_occupied
         ):
             verified_rsv_ids.add(rsv.id)
-            free_unused_rooms = free_unused_rooms.exclude(id=room.id)
+            exclude_ids.add(room.id)
+
             return True
 
         return False
@@ -218,8 +216,7 @@ class RoomSerializer(serializers.ModelSerializer):
                 if current_room in room_matching_condition:
                     sorted_free_rooms = sorted(free_rooms, key=lambda x: x.quantity)
                     verified_rsv_ids = set()
-
-                    free_unused_rooms = deepcopy(free_rooms)
+                    exclude_ids = set()
 
                     for room in sorted_free_rooms:
                         for rsv in rsv_list_conflict_free:
@@ -232,10 +229,10 @@ class RoomSerializer(serializers.ModelSerializer):
                                     rsv_list_guest=rsv_list_guest,
                                     all_reservations=all_reservations,
                                     verified_rsv_ids=verified_rsv_ids,
+                                    exclude_ids=exclude_ids,
                                     rsvs_used_occupied=rsvs_used_occupied,
                                     rsv=rsv,
                                     room=room,
-                                    free_unused_rooms=free_unused_rooms,
                                     dt_departure_date=dt_departure_date,
                                 )
                                 if success:
@@ -246,10 +243,14 @@ class RoomSerializer(serializers.ModelSerializer):
                                     rsv=rsv,
                                     room=room,
                                     verified_rsv_ids=verified_rsv_ids,
+                                    exclude_ids=exclude_ids,
                                     rsvs_used_occupied=rsvs_used_occupied,
-                                    free_unused_rooms=free_unused_rooms,
                                 ):
                                     break
+
+                    free_unused_rooms = [
+                        r for r in free_rooms if r.id not in exclude_ids
+                    ]
 
                     free_enused_verify = any(
                         r.id == current_room.id for r in free_unused_rooms
@@ -258,15 +259,6 @@ class RoomSerializer(serializers.ModelSerializer):
                     if not free_unused_rooms and increase_availability > 0:
                         free_enused_verify = True
 
-                # print("AAA", rsv_list_conflict_free)
-                # print("BBB", rsv_list_conflict_occupied)
-                # print("CCC", rsvs_used_occupied)
-                # print("DDD", free_enused_verify)
-                print("EEE", increase_availability)
-
-                raise serializers.ValidationError(
-                    {"message": "There'ssssssssssssssssss no available rooms."}
-                )
                 if not free_enused_verify:
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
@@ -275,7 +267,7 @@ class RoomSerializer(serializers.ModelSerializer):
                 if len(rsv_list_guest) > 0:
                     rsv_list_guest[0].delete()
 
-            if instance.entry_date is None:
+            if not instance.entry_date:
                 instance.entry_date = timezone.now()
 
             time_difference = dt_departure_date - instance.entry_date
@@ -312,7 +304,7 @@ class RoomSerializer(serializers.ModelSerializer):
             instance.total_value = "0.00"
 
         for key, value in validated_data.items():
-            if key != "guest" and key != "quantity":
+            if key not in ["guest", "quantity"]:
                 setattr(instance, key, value)
 
         instance.save()

@@ -2,7 +2,6 @@ from datetime import datetime
 
 import pytz
 from django.utils import timezone
-from ipdb import set_trace
 from rest_framework.response import Response
 
 from room.models import Room
