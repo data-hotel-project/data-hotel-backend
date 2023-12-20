@@ -2,7 +2,6 @@ from datetime import datetime
 
 import pytz
 from django.utils import timezone
-from ipdb import set_trace
 from rest_framework.response import Response
 
 from room.models import Room
@@ -48,6 +47,6 @@ class ReservationMixin:
         )
 
         if room_count + free_unused_rooms_qt - rsv_count_match <= 0:
-            return Response({"message": "Hotel is full"}, status=400)
+            return Response({"message": "There's no available rooms."}, status=400)
 
         return super().create(request, *args, **kwargs)

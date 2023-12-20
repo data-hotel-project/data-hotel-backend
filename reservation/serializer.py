@@ -69,9 +69,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
                         if check:
                             rsv_count_match += 1
-                from ipdb import set_trace
 
-                set_trace()
                 if len(rooms_free) + room_count - rsv_count_match <= 0:
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
