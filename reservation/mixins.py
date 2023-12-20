@@ -47,6 +47,6 @@ class ReservationMixin:
         )
 
         if room_count + free_unused_rooms_qt - rsv_count_match <= 0:
-            return Response({"message": "Hotel is full"}, status=400)
+            return Response({"message": "There's no available rooms."}, status=400)
 
         return super().create(request, *args, **kwargs)
