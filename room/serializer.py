@@ -271,6 +271,12 @@ class RoomSerializer(serializers.ModelSerializer):
                     if not free_unused_rooms and increase_availability > 0:
                         free_enused_verify = True
 
+                if (
+                    guest_data == current_room.guest
+                    and dt_departure_date == current_room.departure_date
+                ):
+                    free_enused_verify = True
+
                 if not free_enused_verify:
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
@@ -298,6 +304,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
             instance.guest = guest_data
             instance.status = "Occupied"
+            instance.quantity = dt_quantity
 
         elif guest_data and dt_departure_date and not dt_quantity:
             raise serializers.ValidationError(
@@ -314,6 +321,8 @@ class RoomSerializer(serializers.ModelSerializer):
             instance.departure_date = None
             instance.guest = None
             instance.total_value = "0.00"
+
+        print("AAAA", validated_data)
 
         for key, value in validated_data.items():
             if key not in ["guest", "quantity"]:
