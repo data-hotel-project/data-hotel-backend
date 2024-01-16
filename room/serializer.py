@@ -322,8 +322,6 @@ class RoomSerializer(serializers.ModelSerializer):
             instance.guest = None
             instance.total_value = "0.00"
 
-        print("AAAA", validated_data)
-
         for key, value in validated_data.items():
             if key not in ["guest", "quantity"]:
                 setattr(instance, key, value)
