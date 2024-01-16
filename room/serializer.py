@@ -146,6 +146,18 @@ class RoomSerializer(serializers.ModelSerializer):
         dt_departure_date = validated_data.get("departure_date", {})
         dt_quantity = validated_data.get("quantity", {})
 
+        image_fields = ["image2", "image3", "image4", "image5"]
+        del_image_fields = [
+            "delete_image2",
+            "delete_image3",
+            "delete_image4",
+            "delete_image5",
+        ]
+
+        for image_field, del_image_field in zip(image_fields, del_image_fields):
+            if validated_data.get(del_image_field):
+                setattr(instance, image_field, None)
+
         if guest_data and dt_departure_date and dt_quantity:
             room_id_parameter = self.context["request"].parser_context["kwargs"]["pk"]
             current_room = get_object_or_404(Room, id=room_id_parameter)
@@ -259,6 +271,12 @@ class RoomSerializer(serializers.ModelSerializer):
                     if not free_unused_rooms and increase_availability > 0:
                         free_enused_verify = True
 
+                if (
+                    guest_data == current_room.guest
+                    and dt_departure_date == current_room.departure_date
+                ):
+                    free_enused_verify = True
+
                 if not free_enused_verify:
                     raise serializers.ValidationError(
                         {"message": "There's no available rooms."}
@@ -286,6 +304,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
             instance.guest = guest_data
             instance.status = "Occupied"
+            instance.quantity = dt_quantity
 
         elif guest_data and dt_departure_date and not dt_quantity:
             raise serializers.ValidationError(

@@ -34,10 +34,18 @@ class Room(models.Model):
     )
 
     image = CloudinaryField("image")
+
     image2 = CloudinaryField("image", null=True)
+    delete_image2 = models.BooleanField(default=False)
+
     image3 = CloudinaryField("image", null=True)
+    delete_image3 = models.BooleanField(default=False)
+
     image4 = CloudinaryField("image", null=True)
+    delete_image4 = models.BooleanField(default=False)
+
     image5 = CloudinaryField("image", null=True)
+    delete_image5 = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

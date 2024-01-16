@@ -57,6 +57,7 @@ class EmailOrUsernameModelBackend(ModelBackend):
             )
 
         user = authenticate(request, username=email_or_username, password=password)
+
         if user:
             refresh = RefreshToken.for_user(user)
 
@@ -68,6 +69,7 @@ class EmailOrUsernameModelBackend(ModelBackend):
                     "username": user.username,
                     "is_staff": user.is_staff,
                     "is_superuser": user.is_superuser,
+                    "hotel": user.hotel_id if isinstance(user, Employee) else None,
                 },
             }
 
